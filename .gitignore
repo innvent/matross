@@ -16,3 +16,20 @@ tmp
 .yardoc
 _yardoc
 doc/
+
+# rcov generated
+coverage
+coverage.data
+
+# rdoc generated
+rdoc
+
+# yard generated
+doc
+.yardoc
+
+# bundler
+.bundle
+
+# jeweler generated
+pkg
