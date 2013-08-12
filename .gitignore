@@ -33,3 +33,5 @@ doc
 
 # jeweler generated
 pkg
+
+Gemfile.lock
