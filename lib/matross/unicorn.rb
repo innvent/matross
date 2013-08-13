@@ -7,7 +7,7 @@ namespace :unicorn do
   desc "Initial Setup"
   task :setup, :roles => [:app, :dj] do
     run "mkdir -p #{shared_path}/config"
-    template "unicorn.rb.erb", unicorn_config
+    template "unicorn/unicorn.rb.erb", unicorn_config
   end
   after "deploy:setup", "unicorn:setup"
 
