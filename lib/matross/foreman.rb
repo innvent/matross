@@ -47,9 +47,9 @@ namespace :foreman do
   end
 
   task :app_procfile, :roles => :app do
-    procfile_template = <<-EOF.compact
-      web:  bundle exec unicorn -c <%= unicorn_config %> -E <%= rails_env %>
-    EOF
+    procfile_template = <<-EOF.gsub(/^\s+/, '')
+web: bundle exec unicorn -c <%= unicorn_config %> -E <%= rails_env %>
+EOF
     procfile = ERB.new(procfile_template, nil, '-')
     put procfile.result(binding), "#{shared_path}/Procfile.app"
   end
