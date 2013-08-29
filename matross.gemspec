@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.authors = ["Artur Rodrigues", "Joao Sa"]
   s.date = "2013-08-13"
   s.description = "Our collection of opnionated Capistrano recipes"
-  s.email = ["artur.rodrigues@innvent.com.br", "joao.sa@innvent.com.br"]
+  s.email = ["arturhoo@gmail.com", "me@joaomsa.com"]
   s.extra_rdoc_files = [
     "LICENSE",
     "README.md"
