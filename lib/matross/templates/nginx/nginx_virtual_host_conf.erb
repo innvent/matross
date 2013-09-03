@@ -2,7 +2,7 @@ proxy_cache_path    /var/cache/www levels=1:2 keys_zone=correios-cache:8m max_si
 proxy_temp_path     /var/cache/www/tmp;
 
 upstream <%= application %> {
-  server <%= "unix:#{shared_path}/sockets/unicorn.sock fail_timeout=0" %>;
+  server <%= "unix:/tmp/unicorn.sock fail_timeout=0" %>;
 }
 
 server {

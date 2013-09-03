@@ -1,8 +1,25 @@
-working_directory "<%= current_path %>"
-shared_path = "<%= shared_path %>"
-stderr_path "<%= unicorn_log %>"
-stdout_path "<%= unicorn_log %>"
+app_path            = "<%= current_path %>"
 
-listen "<%= shared_path %>/sockets/unicorn.sock"
-worker_processes <%= unicorn_workers %>
-timeout 240
+working_directory   "#{app_path}"
+pid                 "#{app_path}/tmp/pids/unicorn.pid"
+stderr_path         "#{app_path}/log/unicorn.log"
+stdout_path         "#{app_path}/log/unicorn.log"
+
+listen              "/tmp/unicorn.sock"
+worker_processes    <%= unicorn_workers %>
+timeout             60
+preload_app         true
+
+before_fork do |server, worker|
+  if defined?(ActiveRecord::Base)
+    ActiveRecord::Base.connection.disconnect!
+  end
+
+  sleep 1
+end
+
+after_fork do |server, worker|
+  if defined?(ActiveRecord::Base)
+    ActiveRecord::Base.establish_connection
+  end
+end
