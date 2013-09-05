@@ -1,7 +1,3 @@
-source "http://rubygems.org"
+source 'https://rubygems.org'
 
-gem "capistrano"
-
-group :development do
-  gem "jeweler", "~> 1.8.4"
-end
+gemspec
