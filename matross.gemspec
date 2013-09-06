@@ -6,7 +6,7 @@ require "matross/version"
 Gem::Specification.new do |spec|
   spec.name          = "matross"
   spec.version       = Matross::VERSION
-  spec.authors       = ["Artur Rodrigues" , "Joao Sa"]
+  spec.authors       = ["Artur Rodrigues", "Joao Sa"]
   spec.email         = ["arturhoo@gmail.com", "me@joaomsa.com"]
   spec.description   = %q{Our collection of opnionated Capistrano recipes}
   spec.summary       = %q{Our collection of opnionated Capistrano recipes}
