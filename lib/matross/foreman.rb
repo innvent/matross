@@ -1,5 +1,5 @@
-set_default(:foreman_bin) { "bundle exec foreman" }
-set_default(:foreman_user) { user }
+_cset :foreman_bin, "bundle exec foreman"
+_cset(:foreman_user) { user }
 
 namespace :foreman do
   desc "Initial Setup"

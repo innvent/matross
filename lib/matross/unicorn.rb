@@ -1,6 +1,6 @@
-set_default(:unicorn_config) { "#{shared_path}/config/unicorn.rb" }
-set_default(:unicorn_workers, 1)
-set_default(:unicorn_log) { "#{shared_path}/log/unicorn.log" }
+_cset(:unicorn_config) { "#{shared_path}/config/unicorn.rb" }
+_cset(:unicorn_log) { "#{shared_path}/log/unicorn.log" }
+_cset, :unicorn_workers, 1
 
 namespace :unicorn do
 
