@@ -1,7 +1,9 @@
 load "deploy/assets"
 
 namespace :deploy do
+
   namespace :assets do
+
     desc "Run Rails asset pipeline locally"
     task :precompile, :roles => :web do
       run_locally <<-CMD.gsub(/^\s+/, '')
@@ -20,4 +22,5 @@ namespace :deploy do
     end
 
   end
+
 end

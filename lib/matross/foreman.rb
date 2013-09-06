@@ -1,11 +1,16 @@
-_cset :foreman_bin, "bundle exec foreman"
-_cset(:foreman_user) { user }
+_cset(:foreman_user)  { user }
+_cset :foreman_bin,   "bundle exec foreman"
 
 namespace :foreman do
-  desc "Initial Setup"
-  task :setup, :roles => [:app, :dj] do
+
+  desc "Pre-setup, creates the shared upstart folder"
+  task :pre_setup do
     run "mkdir -p #{shared_path}/upstart"
-    app_procfile
+  end
+  before "foreman:setup", "foreman:pre_setup"
+
+  desc "Merges all partial Procfiles"
+  task :setup do
     run "cat #{shared_path}/Procfile.* > #{shared_path}/Procfile"
     run "rm #{shared_path}/Procfile.*"
   end
@@ -44,14 +49,6 @@ namespace :foreman do
   task :remove, :roles => [:app, :dj] do
     run "cd #{shared_path}/upstart && rm -f Procfile*"
     run "cd /etc/init/ && #{sudo} rm #{application}*"
-  end
-
-  task :app_procfile, :roles => :app do
-    procfile_template = <<-EOF.gsub(/^\s+/, '')
-web: bundle exec unicorn -c <%= unicorn_config %> -E <%= rails_env %>
-EOF
-    procfile = ERB.new(procfile_template, nil, '-')
-    put procfile.result(binding), "#{shared_path}/Procfile.app"
   end
 
 end
