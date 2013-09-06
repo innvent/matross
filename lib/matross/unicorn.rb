@@ -11,13 +11,14 @@ namespace :unicorn do
   end
   after "deploy:setup", "unicorn:setup"
 
-  task :unicorn_procfile, :roles => :app do
+  desc "Writes the unicorn part of the Procfile"
+  task :procfile, :roles => :app do
     procfile_template = <<-EOF.gsub(/^\s+/, '')
       web: bundle exec unicorn -c <%= unicorn_config %> -E <%= rails_env %>
     EOF
     procfile = ERB.new(procfile_template, nil, '-')
     put procfile.result(binding), "#{shared_path}/Procfile.app"
   end
-  after "foreman:pre_setup", "unicorn_procfile"
+  after "foreman:pre_setup", "unicorn:procfile"
 
 end
