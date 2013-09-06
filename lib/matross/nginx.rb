@@ -2,7 +2,6 @@ namespace :nginx do
 
   desc "Setup application in nginx"
   task :setup, :roles => :web do
-    run "#{sudo} mkdir -p /etc/nginx/ssl"
     template "nginx/nginx_virtual_host_conf.erb", "/tmp/#{application}"
     run "#{sudo} mv /tmp/#{application} /etc/nginx/sites-available/#{application}"
     run "#{sudo} ln -fs /etc/nginx/sites-available/#{application} /etc/nginx/sites-enabled/#{application}"
