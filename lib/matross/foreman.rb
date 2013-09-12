@@ -1,3 +1,5 @@
+dep_included? 'foreman'
+
 _cset(:foreman_user)  { user }
 _cset :foreman_bin,   "bundle exec foreman"
 
