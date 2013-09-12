@@ -37,7 +37,7 @@ namespace :foreman do
 
   desc "Symlink configuration scripts"
   task :symlink, :roles => [:app, :dj], :except => { :no_release => true } do
-    run "ln -nfs #{shared_path}/Procfile #{release_path}/Procfile"
+    run "ln -nfs #{shared_path}/Procfile #{current_path}/Procfile"
   end
   after "foreman:setup", "foreman:symlink"
 
