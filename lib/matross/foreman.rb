@@ -2,6 +2,7 @@ dep_included? 'foreman'
 
 _cset(:foreman_user)  { user }
 _cset :foreman_bin,   "bundle exec foreman"
+_cset :foreman_procs, {}
 
 namespace :foreman do
 
@@ -25,12 +26,20 @@ namespace :foreman do
     upload File.expand_path("../templates/foreman", __FILE__), matross_path,
            :via => :scp, :recursive => true
 
+    proc_list = ""
+    foreman_procs.each { |process, num|
+      proc_list << ',' if not proc_list.empty?
+      proc_list << "#{process}=#{num}"
+    }
+    proc_list = " -c #{proc_list}" if not proc_list.empty?
+
     run "cd #{current_path} && #{foreman_bin} export upstart #{shared_path}/upstart "\
       "-f #{current_path}/Procfile "\
       "-a #{application} "\
       "-u #{foreman_user} "\
       "-l #{shared_path}/log "\
-      "-t #{matross_path}/foreman"
+      "-t #{matross_path}/foreman"\
+      << proc_list
     run "cd #{shared_path}/upstart && #{sudo} cp * /etc/init/"
   end
   before "deploy:restart", "foreman:export"
