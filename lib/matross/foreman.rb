@@ -14,7 +14,7 @@ namespace :foreman do
 
   desc "Merges all partial Procfiles"
   task :setup do
-    run "cat #{shared_path}/Procfile.* > #{shared_path}/Procfile"
+    run "cat #{current_path}/Procfile #{shared_path}/Procfile.* > #{shared_path}/Procfile-matross"
     run "rm #{shared_path}/Procfile.*"
   end
   before "foreman:export", "foreman:setup"
@@ -34,7 +34,7 @@ namespace :foreman do
     proc_list = " -c #{proc_list}" if not proc_list.empty?
 
     run "cd #{current_path} && #{foreman_bin} export upstart #{shared_path}/upstart "\
-      "-f #{current_path}/Procfile "\
+      "-f #{current_path}/Procfile-matross "\
       "-a #{application} "\
       "-u #{foreman_user} "\
       "-l #{shared_path}/log "\
@@ -46,7 +46,7 @@ namespace :foreman do
 
   desc "Symlink configuration scripts"
   task :symlink, :roles => [:app, :dj], :except => { :no_release => true } do
-    run "ln -nfs #{shared_path}/Procfile #{current_path}/Procfile"
+    run "ln -nfs #{shared_path}/Procfile-matross #{current_path}/Procfile-matross"
   end
   after "foreman:setup", "foreman:symlink"
 
