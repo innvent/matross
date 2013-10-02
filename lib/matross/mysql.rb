@@ -24,4 +24,5 @@ namespace :db do
     EOF
     run "mysql --user=#{mysql_user} --password=#{mysql_passwd} --host=#{mysql_host} --execute=\"#{sql}\""
   end
+  after "db:setup", "db:create"
 end
