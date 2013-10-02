@@ -25,4 +25,14 @@ namespace :db do
     run "mysql --user=#{mysql_user} --password=#{mysql_passwd} --host=#{mysql_host} --execute=\"#{sql}\""
   end
   after "db:setup", "db:create"
+
+  desc "Loads the application schema into the database"
+  task :schema_load, :roles => [:db] do
+    sql = <<-EOF.gsub(/^\s+/, '')
+      SELECT count(*) FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '#{mysql_database}');
+    EOF
+    table_count =  "mysql --user=#{mysql_user} --password=#{mysql_passwd} --host=#{mysql_host} --batch --skip-column-names --execute=\"#{sql}\""
+    run "cd #{current_path} && rake db:schema:load" unless table_count == 0
+  end
+  after "db:symlink", "db:schema_load"
 end
