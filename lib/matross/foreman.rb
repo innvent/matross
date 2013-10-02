@@ -42,7 +42,7 @@ namespace :foreman do
     proc_list = " -c #{proc_list}" unless proc_list.empty?
 
     run "cd #{current_path} && #{foreman_bin} export upstart #{shared_path}/upstart "\
-      "-f #{shared_path}/Procfile-matross "\
+      "-f #{current_path}/Procfile-matross "\
       "-a #{application} "\
       "-u #{foreman_user} "\
       "-l #{shared_path}/log "\
