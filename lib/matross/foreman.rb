@@ -12,10 +12,17 @@ namespace :foreman do
   end
   before "foreman:setup", "foreman:pre_setup"
 
-  desc "Merges all partial Procfiles"
+  desc "Merges all partial Procfiles and defines a specific dotenv"
   task :setup do
-    run "cat $(test -f #{current_path}/Procfile && $_) #{shared_path}/Procfile.* > #{shared_path}/Procfile-matross"
+    run "cat $(test -f #{current_path}/Procfile && echo \"$_\") #{shared_path}/Procfile.* > #{shared_path}/Procfile-matross"
     run "rm #{shared_path}/Procfile.*"
+
+    dotenv_template = <<-EOF.gsub(/^\s+/, '')
+      RAILS_ENV=#{rails_env}
+    EOF
+    dotenv = ERB.new(dotenv_template, nil, '-')
+    put dotenv.result(binding), "#{shared_path}/.env-matross-partial"
+    run "cat $(test -f #{current_path}/.env && echo \"$_\") #{shared_path}/.env-matross-partial > #{shared_path}/.env-matross"
   end
   before "foreman:export", "foreman:setup"
 
@@ -34,11 +41,12 @@ namespace :foreman do
     proc_list = " -c #{proc_list}" unless proc_list.empty?
 
     run "cd #{current_path} && #{foreman_bin} export upstart #{shared_path}/upstart "\
-      "-f #{current_path}/Procfile-matross "\
+      "-f #{shared_path}/Procfile-matross "\
       "-a #{application} "\
       "-u #{foreman_user} "\
       "-l #{shared_path}/log "\
-      "-t #{matross_path}/foreman"\
+      "-t #{matross_path}/foreman "\
+      "-e #{shared_path}/.env-matross"\
       << proc_list
     run "cd #{shared_path}/upstart && #{sudo} cp * /etc/init/"
   end
@@ -47,6 +55,7 @@ namespace :foreman do
   desc "Symlink configuration scripts"
   task :symlink, :roles => [:app, :dj], :except => { :no_release => true } do
     run "ln -nfs #{shared_path}/Procfile-matross #{current_path}/Procfile-matross"
+    run "ln -nfs #{shared_path}/.env-matross #{current_path}/.env-matross"
   end
   after "foreman:setup", "foreman:symlink"
 
