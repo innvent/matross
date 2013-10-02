@@ -14,7 +14,7 @@ namespace :foreman do
 
   desc "Merges all partial Procfiles"
   task :setup do
-    run "cat #{current_path}/Procfile #{shared_path}/Procfile.* > #{shared_path}/Procfile-matross"
+    run "cat $(test -f #{current_path}/Procfile && $_) #{shared_path}/Procfile.* > #{shared_path}/Procfile-matross"
     run "rm #{shared_path}/Procfile.*"
   end
   before "foreman:export", "foreman:setup"
@@ -28,10 +28,10 @@ namespace :foreman do
 
     proc_list = ""
     foreman_procs.each { |process, num|
-      proc_list << ',' if not proc_list.empty?
+      proc_list << ',' unless proc_list.empty?
       proc_list << "#{process}=#{num}"
     }
-    proc_list = " -c #{proc_list}" if not proc_list.empty?
+    proc_list = " -c #{proc_list}" unless proc_list.empty?
 
     run "cd #{current_path} && #{foreman_bin} export upstart #{shared_path}/upstart "\
       "-f #{current_path}/Procfile-matross "\
