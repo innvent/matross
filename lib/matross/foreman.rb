@@ -23,6 +23,7 @@ namespace :foreman do
     dotenv = ERB.new(dotenv_template, nil, '-')
     put dotenv.result(binding), "#{shared_path}/.env-matross-partial"
     run "cat $(test -f #{current_path}/.env && echo \"$_\") #{shared_path}/.env-matross-partial > #{shared_path}/.env-matross"
+    run "rm #{shared_path}/.env-matross-partial"
   end
   before "foreman:export", "foreman:setup"
 
