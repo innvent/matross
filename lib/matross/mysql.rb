@@ -13,7 +13,7 @@ namespace :db do
 
   desc "Updates the symlink for database.yml for the just deployed release"
   task :symlink, :roles => [:app, :dj] do
-    run "ln -nfs #{database_config} #{current_path}/config/database_config"
+    run "ln -nfs #{database_config} #{current_path}/config/database.yml"
   end
   before "deploy:restart", "db:symlink"
 
