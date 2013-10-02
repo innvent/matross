@@ -14,7 +14,7 @@ namespace :foreman do
 
   desc "Merges all partial Procfiles and defines a specific dotenv"
   task :setup do
-    run "cat $(test -f #{current_path}/Procfile && echo \"$_\") #{shared_path}/Procfile.* > #{shared_path}/Procfile-matross"
+    run "cat $(test -f #{current_path}/Procfile && echo -n \"#{current_path}/Procfile\") #{shared_path}/Procfile.* > #{shared_path}/Procfile-matross"
     run "rm #{shared_path}/Procfile.*"
 
     dotenv_template = <<-EOF.gsub(/^\s+/, '')
