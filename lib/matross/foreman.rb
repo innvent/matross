@@ -34,8 +34,16 @@ namespace :foreman do
     upload File.expand_path("../templates/foreman", __FILE__), matross_path,
            :via => :scp, :recursive => true
 
+    # By default spawn one instance of every process
+    procs = {}
+    capture("cat #{current_path}/Procfile-matross").split("\n").each { |line|
+      process = line[/^([A-Za-z0-9_]+):\s*(.+)$/, 1]
+      procs[process] = 1
+    }
+    procs.merge!(foreman_procs)
+
     proc_list = ""
-    foreman_procs.each { |process, num|
+    procs.each { |process, num|
       proc_list << ',' unless proc_list.empty?
       proc_list << "#{process}=#{num}"
     }
