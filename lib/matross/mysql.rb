@@ -32,7 +32,7 @@ namespace :db do
       SELECT count(*) FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '#{mysql_database}');
     EOF
     table_count =  "mysql --user=#{mysql_user} --password=#{mysql_passwd} --host=#{mysql_host} --batch --skip-column-names --execute=\"#{sql}\""
-    run "cd #{current_path} && rake db:schema:load" unless table_count == 0
+    run "cd #{current_path} && RAILS_ENV=#{rails_env.to_s.shellescape} bundle exec rake db:schema:load" unless table_count == 0
   end
   after "db:symlink", "db:schema_load"
 end
