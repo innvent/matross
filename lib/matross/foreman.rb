@@ -18,7 +18,7 @@ namespace :foreman do
     run "rm #{shared_path}/Procfile.*"
 
     dotenv_template = <<-EOF.gsub(/^\s+/, '')
-      RAILS_ENV=#{rails_env}
+      RAILS_ENV=#{rails_env.to_s.shellescape}
     EOF
     dotenv = ERB.new(dotenv_template, nil, '-')
     put dotenv.result(binding), "#{shared_path}/.env-matross-partial"
