@@ -68,6 +68,19 @@ namespace :foreman do
   end
   after "foreman:setup", "foreman:symlink"
 
+  desc "Symlink upstart logs to application shared/log"
+  task :log, :roles => [:app, :dj] do
+    capture("ls #{shared_path}/upstart -1").split(/\r?\n/).each { |line|
+      log = File.basename(line.sub(/\.conf\Z/, ".log"))
+      run <<-EOF.gsub(/^\s+/, '')
+        #{sudo} touch /var/log/upstart/#{log} &&
+        #{sudo} chmod o+r /var/log/upstart/#{log} &&
+        ln -nfs /var/log/upstart/#{log} #{shared_path}/log/#{log}
+      EOF
+    }
+  end
+  after "foreman:export", "foreman:log"
+
   desc "Restart services"
   task :restart, :roles => [:app, :dj] do
     run "#{sudo} start #{application} || #{sudo} restart #{application}"
