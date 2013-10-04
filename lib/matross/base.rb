@@ -17,3 +17,14 @@ def dep_included?(dependency)
     raise Matross::MissingDepError, "recipe requires the #{dependency} gem"
   end
 end
+
+namespace :base do
+
+  task :logrotate, :roles => :app do
+    run "mkdir -p #{shared_path}/config"
+    template "base/logrotate.erb", "#{shared_path}/config/logrotate"
+    run "#{sudo} ln -nfs #{shared_path}/config/logrotate /etc/logrotate.d/#{application}"
+  end
+  after "deploy:setup", "base:logrotate"
+
+end
