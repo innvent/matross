@@ -15,7 +15,7 @@ namespace :db do
   task :symlink, :roles => [:app, :dj] do
     run "ln -nfs #{database_config} #{current_path}/config/database.yml"
   end
-  before "deploy:restart", "db:symlink"
+  after "bundle:install", "db:symlink"
 
   desc "Creates the application database"
   task :create, :roles  => [:db] do
