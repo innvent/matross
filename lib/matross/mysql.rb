@@ -36,7 +36,7 @@ namespace :db do
                           "--password=#{mysql_passwd} "\
                           "--host=#{mysql_host} "\
                           "--execute=\"#{sql}\"").to_i
-    run "cd #{current_path} &&"\
+    run "cd #{release_path} &&"\
       "RAILS_ENV=#{rails_env.to_s.shellescape} bundle exec rake db:schema:load" if table_count == 0
   end
   after "db:symlink", "db:schema_load"
