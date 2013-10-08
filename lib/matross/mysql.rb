@@ -20,7 +20,7 @@ namespace :db do
   desc "Creates the application database"
   task :create, :roles  => [:db] do
     sql = <<-EOF.gsub(/^\s+/, '')
-      CREATE DATABASE IF NOT EXISTS #{mysql_database};
+      CREATE DATABASE IF NOT EXISTS #{mysql_database.gsub("-", "_")};
     EOF
     run "mysql --user=#{mysql_user} --password=#{mysql_passwd} --host=#{mysql_host} --execute=\"#{sql}\""
   end
@@ -29,7 +29,7 @@ namespace :db do
   desc "Loads the application schema into the database"
   task :schema_load, :roles => [:db] do
     sql = <<-EOF.gsub(/^\s+/, '')
-      SELECT count(*) FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '#{mysql_database}');
+      SELECT count(*) FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '#{mysql_database.gsub("-", "_")}');
     EOF
     table_count = capture("mysql --batch --skip-column-names "\
                           "--user=#{mysql_user} "\

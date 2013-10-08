@@ -1,7 +1,7 @@
 <%= rails_env %>:
   adapter: mysql2
   host: <%= mysql_host %>
-  database: <%= mysql_database %>
+  database: <%= mysql_database.gsub("-", "_") %>
   username: <%= mysql_user %>
   password: <%= mysql_passwd %>
   pool: 5
