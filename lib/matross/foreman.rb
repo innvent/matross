@@ -7,28 +7,27 @@ _cset :foreman_procs, {}
 namespace :foreman do
 
   desc "Pre-setup, creates the shared upstart folder"
-  task :pre_setup do
+  task :pre_setup, except: {no_release: true } do 
     run "mkdir -p #{shared_path}/upstart"
   end
   before "foreman:setup", "foreman:pre_setup"
 
   desc "Merges all partial Procfiles and defines a specific dotenv"
-  task :setup do
-    run "cat $(test -f #{current_path}/Procfile && echo -n \"#{current_path}/Procfile\") #{shared_path}/Procfile.* > #{shared_path}/Procfile-matross"
-    run "rm #{shared_path}/Procfile.*"
-
-    dotenv_template = <<-EOF.gsub(/^\s+/, '')
-      RAILS_ENV=#{rails_env.to_s.shellescape}
+  task :setup, except: { no_release: true } do
+    cmd = <<-EOF.gsub(/^\s+/, '')
+      rm -f #{shared_path}/Procfile-matross;
+      for file in #{current_path}/Procfile #{shared_path}/Procfile.*; do \ 
+        cat $file >> #{shared_path}/Procfile-matross;
+      done;
+      rm -f #{shared_path}/Procfile.*;
+      cat <(RAILS_ENV=#{rails_env.to_s.shellescape}) $(test -f #{current_path}/.env && echo \"$_\") > #{shared_path}/.env-matross;
     EOF
-    dotenv = ERB.new(dotenv_template, nil, '-')
-    put dotenv.result(binding), "#{shared_path}/.env-matross-partial"
-    run "cat $(test -f #{current_path}/.env && echo \"$_\") #{shared_path}/.env-matross-partial > #{shared_path}/.env-matross"
-    run "rm #{shared_path}/.env-matross-partial"
+    run cmd, shell: "/bin/bash"
   end
   before "foreman:export", "foreman:setup"
 
   desc "Export the Procfile to Ubuntu's upstart scripts"
-  task :export, :roles => [:app, :dj] do
+  task :export, except: { no_release: true } do
     matross_path = "#{shared_path}/matross"
     run "mkdir -p #{matross_path}"
     upload File.expand_path("../templates/foreman", __FILE__), matross_path,
@@ -62,14 +61,14 @@ namespace :foreman do
   before "deploy:restart", "foreman:export"
 
   desc "Symlink configuration scripts"
-  task :symlink, :roles => [:app, :dj], :except => { :no_release => true } do
+  task :symlink, except: { no_release: true } do
     run "ln -nfs #{shared_path}/Procfile-matross #{current_path}/Procfile-matross"
     run "ln -nfs #{shared_path}/.env-matross #{current_path}/.env-matross"
   end
   after "foreman:setup", "foreman:symlink"
 
   desc "Symlink upstart logs to application shared/log"
-  task :log, :roles => [:app, :dj] do
+  task :log, except: { no_release: true } do
     capture("ls #{shared_path}/upstart -1").split(/\r?\n/).each { |line|
       log = File.basename(line.sub(/\.conf\Z/, ".log"))
       run <<-EOF.gsub(/^\s+/, '')
@@ -82,13 +81,13 @@ namespace :foreman do
   after "foreman:export", "foreman:log"
 
   desc "Restart services"
-  task :restart, :roles => [:app, :dj] do
+  task :restart, except: { no_release: true } do
     run "#{sudo} start #{application} || #{sudo} restart #{application}"
   end
   after "deploy:restart", "foreman:restart"
 
   desc "Remove upstart scripts"
-  task :remove, :roles => [:app, :dj] do
+  task :remove, except: { no_release: true } do
     run "cd #{shared_path}/upstart && rm -f Procfile*"
     run "cd /etc/init/ && #{sudo} rm #{application}*"
   end
