@@ -7,7 +7,7 @@ _cset :foreman_procs, {}
 namespace :foreman do
 
   desc "Pre-setup, creates the shared upstart folder"
-  task :pre_setup, except: {no_release: true } do 
+  task :pre_setup, except: {no_release: true } do
     run "mkdir -p #{shared_path}/upstart"
   end
   before "foreman:setup", "foreman:pre_setup"
@@ -16,11 +16,13 @@ namespace :foreman do
   task :setup, except: { no_release: true } do
     cmd = <<-EOF.gsub(/^\s+/, '')
       rm -f #{shared_path}/Procfile-matross;
-      for file in #{current_path}/Procfile #{shared_path}/Procfile.*; do \ 
+      for file in #{current_path}/Procfile #{shared_path}/Procfile.*; do \
         cat $file >> #{shared_path}/Procfile-matross;
       done;
       rm -f #{shared_path}/Procfile.*;
-      cat <(RAILS_ENV=#{rails_env.to_s.shellescape}) $(test -f #{current_path}/.env && echo \"$_\") > #{shared_path}/.env-matross;
+      cat <(echo \"RAILS_ENV=#{rails_env.to_s.shellescape}\") \
+        $(test -f #{current_path}/.env && echo \"$_\") > \
+        #{shared_path}/.env-matross;
     EOF
     run cmd, shell: "/bin/bash"
   end
