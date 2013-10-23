@@ -1,0 +1,5 @@
+aws_access_key_id: <%= fog_aws_access_key_id %>
+aws_secret_access_key: <%= fog_aws_secret_access_key %>
+directory: <%= fog_directory %>
+region: <%= defined?(fog_region) ? fog_region : 'us-east-1' %>
+public: <%= defined?(fog_public) ? fog_public : false %>
