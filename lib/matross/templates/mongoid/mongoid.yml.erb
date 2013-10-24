@@ -1,0 +1,8 @@
+<%= rails_env %>
+  sessions:
+    default:
+      database: <%= mongo_database.gsub("-", "_") %>
+      hosts:
+        <% mongo_hosts.each do |host| -%>
+        - <%= host %>
+        <% end -%>
