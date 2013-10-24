@@ -13,7 +13,7 @@ namespace :mongoid do
 
   desc "Updates the symlink for mongoid.yml for deployed release"
   task :symlink, :roles => :app do
-    run "ln -nfs #{mongoid_config} #{release_path}/config/mongoid_config.yml"
+    run "ln -nfs #{mongoid_config} #{release_path}/config/mongoid.yml"
   end
   after "bundle:install", "mongoid:symlink"
 
