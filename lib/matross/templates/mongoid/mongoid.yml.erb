@@ -3,8 +3,8 @@
     default:
       database: <%= mongo_database.gsub("-", "_") %>
       hosts:
-      <% mongo_hosts.each do |host| -%>
+      <%- mongo_hosts.each do |host| -%>
         - <%= host %>
-      <% end -%>
+      <%- end -%>
       username: <%= mongo_user %>
       password: <%= mongo_passwd %>

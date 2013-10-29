@@ -1,9 +1,8 @@
 dep_included? 'mongoid'
 
 _cset(:mongoid_config)  { "#{shared_path}/config/mongoid.yml" }
-
-_cset :mongo_user,    nil
-_cset :mongo_passwd,  nil
+_cset :mongo_user,      nil
+_cset :mongo_passwd,    nil
 
 namespace :mongoid do
 
