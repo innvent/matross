@@ -1,4 +1,5 @@
 dep_included? 'faye'
+dep_included? 'thin'
 
 _cset(:faye_config) { "#{shared_path}/config/faye_server.yml" }
 
@@ -16,5 +17,15 @@ namespace :faye do
     run "ln -nfs #{faye_config} #{release_path}/config/faye_server.yml"
   end
   after "bundle:install", "faye:symlink"
+
+  desc "Writes the faye part of the Procfile"
+  task :procfile, :roles => :faye do
+    procfile_template = <<-EOF.gsub(/^\s+/, '')
+      faye: bundle exec rackup  #{faye_config} -s thin -E #{rails_env} -p #{faye_port} %>
+    EOF
+    procfile = ERB.new(procfile_template, nil, '-')
+    put procfile.result(binding), "#{shared_path}/Procfile.faye"
+  end
+  after "foreman:pre_setup", "faye:procfile"
 
 end
