@@ -8,7 +8,7 @@ def template(from, to)
   else
     erb = File.read(File.expand_path("../templates/#{from}", __FILE__))
   end
-  put ERB.new(erb).result(binding), to
+  put ERB.new(erb, nil, '-').result(binding), to
 end
 
 def dep_included?(dependency)
