@@ -82,6 +82,11 @@ namespace :foreman do
   end
   after "foreman:export", "foreman:log"
 
+  desc "Stop services"
+  task :stop, except: { no_release: true } do
+    run "#{sudo} stop #{application}"
+  end
+
   desc "Restart services"
   task :restart, except: { no_release: true } do
     run "#{sudo} start #{application} || #{sudo} restart #{application}"

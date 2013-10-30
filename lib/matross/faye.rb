@@ -21,7 +21,7 @@ namespace :faye do
   desc "Writes the faye part of the Procfile"
   task :procfile, :roles => :faye do
     procfile_template = <<-EOF.gsub(/^\s+/, '')
-      faye: bundle exec rackup  #{faye_config} -s thin -E #{rails_env} -p #{faye_port} %>
+      faye: bundle exec rackup  <%= faye_config %> -s thin -E <%= rails_env %> -p <%= faye_port %>
     EOF
     procfile = ERB.new(procfile_template, nil, '-')
     put procfile.result(binding), "#{shared_path}/Procfile.faye"
