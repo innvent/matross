@@ -6,5 +6,5 @@
       <%- mongo_hosts.each do |host| -%>
         - <%= host %>
       <%- end -%>
-      <% if defined?(mongo_user) %>username: <%= mongo_user %><% end %>
-      <% if defined?(mongo_passwd) %>password: <%= mongo_passwd %><% end %>
+      <% if exists?(:mongo_user) %>username: <%= mongo_user %><% end %>
+      <% if exists?(:mongo_passwd) %>password: <%= mongo_passwd %><% end %>
