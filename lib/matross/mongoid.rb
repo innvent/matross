@@ -1,4 +1,4 @@
-dep_included? 'mongoid'
+dep_included? "mongoid"
 
 _cset(:mongoid_config)  { "#{shared_path}/config/mongoid.yml" }
 _cset :mongo_user,      nil

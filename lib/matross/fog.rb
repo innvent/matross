@@ -1,4 +1,9 @@
-_cset(:fog_config) { "#{shared_path}/config/fog_config.yml" }
+dep_included? "fog"
+
+_cset(:fog_config)  { "#{shared_path}/config/fog_config.yml" }
+_cset :fog_region,  "us-east-1"
+_cset :fog_public,  false
+
 namespace :fog do
 
   desc "Creates the fog_config.yml in shared path"
