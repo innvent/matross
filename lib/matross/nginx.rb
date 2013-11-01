@@ -15,4 +15,16 @@ namespace :nginx do
   end
   after "deploy:setup", "nginx:reload"
 
+  desc "Enable Basic Auth on the stage"
+  task :lock, :roles => :web do
+    run "#{sudo} sed -i /auth_basic/d /etc/nginx/sites-available/#{application}"
+    nginx_lock = "        auth_basic \"Restricted\";\n        auth_basic_user_file #{shared_path.gsub('/', '\\/')}\\/.htpasswd;"
+    run "#{sudo} sed -i 's/.*location @#{application}.*/&\n#{nginx_lock}/' /etc/nginx/sites-available/#{application}"
+  end
+
+  task :unlock, :roles => :web do
+    run "#{sudo} sed -i /auth_basic/d /etc/nginx/sites-available/#{application}"
+  end
+
+
 end
