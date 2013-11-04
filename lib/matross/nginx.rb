@@ -22,6 +22,7 @@ namespace :nginx do
     run "#{sudo} sed -i /auth_basic/d /etc/nginx/sites-available/#{application}"
     nginx_lock = "        auth_basic \"Restricted\";\n        auth_basic_user_file #{shared_path.gsub('/', '\\/')}\\/.htpasswd;"
     run "#{sudo} sed -i 's/.*location @#{application}.*/&\n#{nginx_lock}/' /etc/nginx/sites-available/#{application}"
+    run "echo #{htpasswd} > #{shared_path}/.htpasswd"
   end
 
   task :unlock, :roles => :web do
