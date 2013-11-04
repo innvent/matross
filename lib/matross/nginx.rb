@@ -14,6 +14,8 @@ namespace :nginx do
     run "#{sudo} /etc/init.d/nginx reload"
   end
   after "deploy:setup", "nginx:reload"
+  after "nginx:lock",   "nginx:reload"
+  after "nginx:unlock", "nginx:reload"
 
   desc "Enable Basic Auth on the stage"
   task :lock, :roles => :web do
