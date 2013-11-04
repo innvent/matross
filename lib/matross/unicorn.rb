@@ -22,5 +22,4 @@ namespace :unicorn do
     put procfile.result(binding), "#{shared_path}/Procfile.web"
   end
   after "foreman:pre_setup", "unicorn:procfile"
-
 end

@@ -12,7 +12,7 @@ def template(from, to)
 end
 
 def dep_included?(dependency)
-  lockfile = Bundler::LockfileParser.new(Bundler.read_file(Bundler.default_lockfile)) 
+  lockfile = Bundler::LockfileParser.new(Bundler.read_file(Bundler.default_lockfile))
   if not lockfile.specs.any? { |gem| gem.name == dependency} then
     raise Matross::MissingDepError, "recipe requires the #{dependency} gem"
   end
@@ -26,5 +26,4 @@ namespace :base do
     run "#{sudo} ln -nfs #{shared_path}/config/logrotate /etc/logrotate.d/#{application}"
   end
   after "deploy:setup", "base:logrotate"
-
 end

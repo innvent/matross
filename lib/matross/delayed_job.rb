@@ -17,5 +17,4 @@ namespace :delayed_job do
     put procfile.result(binding), "#{shared_path}/Procfile.dj"
   end
   after "foreman:pre_setup", "delayed_job:procfile"
-
 end

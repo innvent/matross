@@ -18,5 +18,4 @@ namespace :fog do
     run "ln -nfs #{fog_config} #{release_path}/config/fog_config.yml"
   end
   after "bundle:install", "fog:symlink"
-
 end

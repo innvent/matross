@@ -16,5 +16,4 @@ namespace :mongoid do
     run "ln -nfs #{mongoid_config} #{release_path}/config/mongoid.yml"
   end
   after "bundle:install", "mongoid:symlink"
-
 end

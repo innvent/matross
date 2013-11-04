@@ -25,6 +25,4 @@ namespace :nginx do
   task :unlock, :roles => :web do
     run "#{sudo} sed -i /auth_basic/d /etc/nginx/sites-available/#{application}"
   end
-
-
 end

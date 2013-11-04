@@ -29,5 +29,4 @@ namespace :faye do
     put procfile.result(binding), "#{shared_path}/Procfile.faye"
   end
   after "foreman:pre_setup", "faye:procfile"
-
 end

@@ -20,7 +20,5 @@ namespace :deploy do
         RAILS_ENV=#{rails_env.to_s.shellescape} #{rake} assets:clean
       CMD
     end
-
   end
-
 end

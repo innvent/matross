@@ -98,5 +98,4 @@ namespace :foreman do
     run "cd #{shared_path}/upstart && rm -f Procfile*"
     run "cd /etc/init/ && #{sudo} rm #{application}*"
   end
-
 end
