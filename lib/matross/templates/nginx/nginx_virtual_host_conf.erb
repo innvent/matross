@@ -8,7 +8,7 @@ server {
     server_name <%= server_name %>;
 
     keepalive_timeout 5;
-    root <%= "#{deploy_to}/current/public" %>;
+    root <%= deploy_to %>/current/public;
     try_files $uri @<%= application %>;
 
     location @<%= application %> {
@@ -26,6 +26,6 @@ server {
 
     error_page 500 502 504 /500.html;
     location = /500.html {
-        root /home/ubuntu/<%= application %>/current/public;
+        root <%= deploy_to %>/current/public;
     }
 }
