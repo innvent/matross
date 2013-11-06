@@ -250,3 +250,86 @@ Procfile task: `faye: bundle exec rackup  <%= faye_ru %> -s thin -E <%= rails_en
 ### Local Assets
 
 This recipe overwrites the default assets precompilation by compiling them locally and then uploading the result to the server.
+
+## Full Example
+
+Below is a full example of how to use `matross` exhaustively. **Do note** that this would be an edge case as, for example, you don't normally run `mongoid` with `mysql`.
+
+> `config/deploy.rb`
+
+```ruby
+set :stages, %w(production staging)
+set :default_stage, 'staging'
+require 'capistrano/ext/multistage'
+require 'bundler/capistrano'
+require 'matross'
+load 'matross/local_assets'
+load 'matross/nginx'
+load 'matross/unicorn'
+load 'matross/faye'
+load 'matross/delayed_job'
+load 'matross/fog'
+load 'matross/mongoid'
+load 'matross/mysql'
+load 'matross/foreman'
+
+set :application,           'awesome_application'
+set :repository,            'git@github.com:innvent/awesome_application.git'
+set :ssh_options,           { :forward_agent => true }
+set :scm,                   :git
+set :scm_verbose,           true
+set :deploy_via,            :remote_cache
+set :shared_children,       %w(public/system log tmp/pids public/uploads)
+default_run_options[:pty]   = true
+
+logger.level = Capistrano::Logger::DEBUG
+
+after 'deploy:update', 'deploy:cleanup'
+```
+
+> `config/deploy/production.rb`
+
+```ruby
+set :user,                      'ubuntu'
+set :group,                     'ubuntu'
+set :use_sudo,                  false
+set :branch,                    'master'
+set :rails_env,                 'production'
+set :deploy_to,                 "/home/#{user}/#{application}"
+set :server_name,               'example.com'
+
+set :mongo_hosts,               [ 'localhost' ]
+set :mongo_database,            "#{application}_#{rails_env}"
+
+set :mysql_host,                'localhost'
+set :mysql_database,            "#{application}_#{rails_env}"
+set :mysql_user,                "#{user}"
+set :mysql_passwd,              ''
+
+set :faye_port,                 '9292'
+set :faye_local,                true
+
+set :htpasswd,                  'admin:$apr1$twOdKBdh$okL.giy91y9LzXsD5swUb0'
+
+set :dj_queues,                 [ 'queue1', 'queue2' ]
+
+set :fog_aws_access_key_id,     'AKIACS5E2GU9NND0NMD4'
+set :fog_aws_secret_access_key, 'rNB38h5Y4ysUM3r10F3oehrnp2ZaBcUPtiOnJyLn'
+set :fog_directory,             'awesome_application_production'
+
+set :foreman_procs,             { 'dj_queue1' => 2, 'dj_queue2' => 3 }
+
+server '192.168.1.1', :app, :web, :dj, :faye, :db, :primary => true
+
+set :default_environment, {
+  'PATH' => "/home/#{user}/.rbenv/shims:/home/#{user}/.rbenv/bin:$PATH"
+}
+```
+
+> `Capfile`
+
+```ruby
+load 'deploy'
+load 'deploy/assets'
+load 'config/deploy'
+```
