@@ -1,5 +1,10 @@
 # matross
 
+Matross is our collection of opinionated Capistrano recipes. We made a bunch of additions and customizations. Below we list the most relevant ones.
+
+* **Foreman by default**: we use [`foreman`](http://ddollar.github.io/foreman/) to environment variables, init scripts, task definitions and more.
+* **Custom foreman upstart template**: we also leverage `foreman`'s templates to build a custom upstart template that enables `console log`, allowing `logrotate` to work properly.
+
 ## Usage
 
 Put `matross` in the `:development` group of your `Gemfile`:
@@ -16,18 +21,13 @@ Run `bundle exec capify .` in the project root folder:
 $ bundle exec capify .
 ```
 
-## What's inside?
+Find a full example [down this `README`](#full-example).
 
-We made a bunch of additions and customizations. Below we list the most relevant ones.
-
-* **Foreman by default**:
-* **Custom foreman upstart template**: we use a custom upstart template, that enables `console log`, allowing `logrotate` to work properly.
-
-## Overriding default templates
+### Overriding default templates
 
 We have our opinions, but don't know everything. What works for us, may not fit your needs since each app is a unique snowflake. To take care of that `matross` allows you to define your own templates to use instead of the built in ones. Look at the included ones in `lib/matross/templates` to see how we think things should go.
 
-## Managing application daemons with Foreman
+### Managing application daemons with Foreman
 
 Foreman has freed us of the tedious task of writing `init` and Upstart scripts. Some of our `matross` recipes automatically add processes - such as the `unicorn` server - to the `Procfile`.
 
@@ -42,7 +42,19 @@ set :foreman_procs, {
 }
 ```
 
-We also modified the default upstart template to log through upstart instead of just piping stdout and stderr into files. Goodbye nocturnal logexplosion. (Like all templates you can override it!)
+We also modified the default upstart template to log through upstart instead of just piping stdout and stderr into files. Goodbye nocturnal logexplosion. (Like all templates you can override it!).
+
+If you have custom tasks that should also be started, simply list them in the `Procfile` in the root of your application. They will be appended to the recipe's task definitions (eg.: `unicorn`).
+
+```
+custom_task: bundle exec rake custom_task
+```
+
+If there are any environment variables that you want to use, just set them in a `.env` file in the root of your application. Please note that `RAILS_ENV` is properly set during `foreman` tasks.
+
+```
+CUSTOM_TASK_ENV=boost
+```
 
 ## Recipes
 
@@ -104,7 +116,7 @@ This recipes creates and configures the virtual_host for the application. [This 
 
 | Variable    | Default value | Description                      |
 | ---         | ---           | ---                              |
-| `:htpasswd` | None          | `htpasswd` user:passwordd format |
+| `:htpasswd` | None          | `htpasswd` user:password format |
 
 > Tasks
 
