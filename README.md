@@ -25,7 +25,7 @@ Find a full example [down this `README`](#full-example).
 
 ### Overriding default templates
 
-We have our opinions, but don't know everything. What works for us, may not fit your needs since each app is a unique snowflake. To take care of that `matross` allows you to define your own templates to use instead of the built in ones. Look at the included ones in `lib/matross/templates` to see how we think things should go.
+We have our opinions, but don't know everything. What works for us, may not fit your needs since each app is a unique snowflake. To take care of that, `matross` allows you to define your own templates instead of the built in ones. Look at the included ones in `lib/matross/templates` to see how we think things should go.
 
 ### Managing application daemons with Foreman
 
@@ -202,7 +202,7 @@ Requires having [`fog`](http://rubygems.org/gems/fog) available in the applicati
 
 Overwritable template: [`fog_config.yml.erb`](lib/matross/templates/fog/fog_config.yml.erb)
 
-The configuration that is generated may be used by other gems, such as [`carrierwave`](http://rubygems.org/gems/carrierwave). Here is how we use it, for example:
+The configuration generated may be used by other gems, such as [`carrierwave`](http://rubygems.org/gems/carrierwave). Here is an example of how we use it:
 
 ```ruby
 # config/initializers/carrierwave.rb
