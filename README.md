@@ -114,9 +114,12 @@ This recipes creates and configures the virtual_host for the application. [This 
 
 > Variables
 
-| Variable    | Default value | Description                      |
-| ---         | ---           | ---                              |
-| `:htpasswd` | None          | `htpasswd` user:password format |
+| Variable                | Default value | Description                                           |
+| ---                     | ---           | ---                                                   |
+| `:htpasswd`             | None          | `htpasswd` user:password format                       |
+| `:nginx_default_server` | `false`       | Sets the vhost for the specified stage as the default |
+
+
 
 > Tasks
 
