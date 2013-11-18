@@ -58,7 +58,7 @@ namespace :mysql do
       most_recent_bkp = capture(%W{find #{shared_path} -type f -name
           '#{mysql_database}_*.sql.gz'} * ' ').split.sort.last
       abort "No dump found. Run mysql:dump:do." if most_recent_bkp.nil?
-      download "#{most_recent_bkp}", "dumps/"
+      download most_recent_bkp, "dumps", :via => :scp
       run_locally "gzip -d dumps/#{File.basename(most_recent_bkp)}"
     end
 
