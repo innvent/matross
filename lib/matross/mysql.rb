@@ -23,7 +23,7 @@ namespace :mysql do
       CREATE DATABASE IF NOT EXISTS #{mysql_database.gsub("-", "_")};
     EOF
     run %W{mysql --user=#{mysql_user}
-             #{'--password=' + mysql_passwd if mysql_passwd}
+             #{'--password=' + mysql_passwd unless mysql_passwd.empty?}
              --host=#{mysql_host}
              --execute="#{sql}"} * ' '
   end
@@ -36,7 +36,7 @@ namespace :mysql do
     EOF
     table_count = capture(%W{mysql --batch --skip-column-names
                               --user=#{mysql_user}
-                              #{'--password=' + mysql_passwd if mysql_passwd}
+                              #{'--password=' + mysql_passwd unless mysql_passwd.empty?}
                               --host=#{mysql_host}
                               --execute="#{sql}"} * ' ').to_i
     run %W{cd #{release_path} &&
@@ -52,7 +52,7 @@ namespace :mysql do
       run %W{cd #{shared_path}/dumps &&
              mysqldump --quote-names --create-options
               --user=#{mysql_user}
-              #{'--password=' + mysql_passwd if mysql_passwd}
+              #{'--password=' + mysql_passwd unless mysql_passwd.empty?}
               --host=#{mysql_host}
               #{mysql_database} |
              gzip > "$(date +'#{mysql_database}_\%Y\%m\%d\%H\%M.sql.gz')"} * ' '
@@ -79,7 +79,7 @@ namespace :mysql do
       db_config = YAML.load(File.read('config/database.yml'))['development']
       run_locally %W{mysql --user=#{db_config['username']}
                       --host=#{db_config['host']}
-                      #{'--password=' + db_config['password'] if db_config['password']}
+                      #{'--password=' + db_config['password'] unless db_config['password'].nil?}
                       #{db_config['database']} < #{most_recent_bkp}} * ' '
     end
   end
