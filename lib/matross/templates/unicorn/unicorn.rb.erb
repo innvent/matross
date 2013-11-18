@@ -3,7 +3,7 @@ app_path            = "<%= current_path %>"
 working_directory   "#{app_path}"
 pid                 "#{app_path}/tmp/pids/unicorn.pid"
 
-listen              "/tmp/unicorn.sock"
+listen              "/tmp/unicorn.<%= application %>.sock"
 worker_processes    <%= unicorn_workers %>
 timeout             60
 preload_app         true
