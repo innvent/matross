@@ -1,3 +1,5 @@
+_cset :nginx_default_server, false
+
 namespace :nginx do
 
   desc "Setup application in nginx"
