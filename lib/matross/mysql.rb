@@ -20,7 +20,7 @@ namespace :mysql do
   after "bundle:install", "mysql:symlink"
 
   desc "Creates the application database"
-  task :create, :roles  => [:db] do
+  task :create, :roles  => :db do
     sql = <<-EOF.gsub(/^\s+/, '')
       CREATE DATABASE IF NOT EXISTS #{mysql_database.gsub("-", "_")};
     EOF
@@ -32,7 +32,7 @@ namespace :mysql do
   after "mysql:setup", "mysql:create"
 
   desc "Loads the application schema into the database"
-  task :schema_load, :roles => [:db] do
+  task :schema_load, :roles => :db do
     sql = <<-EOF.gsub(/^\s+/, '')
       SELECT count(*) FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '#{mysql_database.gsub("-", "_")}');
     EOF
@@ -92,7 +92,7 @@ namespace :mysql do
   namespace :dump do
 
     desc "Dumps the application database"
-    task :do, :roles => [:db], :except => { :no_release => true } do
+    task :do, :roles => :db, :except => { :no_release => true } do
       run "mkdir -p #{shared_path}/dumps"
       run %W{cd #{shared_path}/dumps &&
              mysqldump --quote-names --create-options
@@ -104,7 +104,7 @@ namespace :mysql do
     end
 
     desc "Downloads a copy of the last generated database dump"
-    task :get, :roles => [:db], :except => { :no_release => true } do
+    task :get, :roles => :db, :except => { :no_release => true } do
       run_locally "mkdir -p dumps"
       most_recent_bkp = capture(%W{find #{shared_path} -type f -name
                                     '#{mysql_database}_*.sql.gz'} * ' '
@@ -116,7 +116,7 @@ namespace :mysql do
     end
 
     desc "Apply the latest dump generated stored in 'dumps' locally"
-    task :apply, :roles => [:db], :except => { :no_release => true } do
+    task :apply, :roles => :db, :except => { :no_release => true } do
       most_recent_bkp = %x[find dumps -type f -name\
                             '#{mysql_database}_*.sql'].split.sort.last
       abort "No dump found. Run mysql:dump:get." if most_recent_bkp.nil?
