@@ -1,0 +1,28 @@
+#!/bin/bash
+
+SRCDIR='/tmp/<%= application %>-mysql-backup'
+BUCKET=<%= mysql_backup_bucket %>
+PREFIX=<%= mysql_backup_prefix %>
+
+# database access details
+HOST=<%= mysql_host %>
+USER=<%= mysql_user%>
+PASS=<%= mysql_passwd%>
+DB=<%= mysql_database%>
+
+# backup name
+BACKUP_NAME="$(date +'bkp%Y%m%d%H%M')"
+
+# make the temp directory if it doesn't exist and cd into it
+mkdir -p ${SRCDIR}
+cd ${SRCDIR}
+
+# mysql dump
+mysqldump -h${HOST} -u${USER} --quote-names --create-options --force ${DB} > ${BACKUP_NAME}.sql
+tar -czPf ${BACKUP_NAME}.tar.gz ${BACKUP_NAME}.sql
+
+# upload to s3
+s3cmd put ${SRCDIR}/${BACKUP_NAME}.tar.gz s3://${BUCKET}/${PREFIX}
+
+# clean old files
+find ${SRCDIR}/* -mtime +5 -exec rm {} \;
