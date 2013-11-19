@@ -2,7 +2,7 @@
 
 SRCDIR='/tmp/<%= application %>-mysql-backup'
 BUCKET=<%= mysql_backup_bucket %>
-PREFIX=<%= mysql_backup_prefix %>
+PREFIX=<%= File.join(mysql_backup_prefix, '') %>
 
 # database access details
 HOST=<%= mysql_host %>
