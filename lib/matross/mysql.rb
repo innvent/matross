@@ -45,32 +45,43 @@ namespace :mysql do
 
   namespace :backup do
 
+    # This routine is heavily inspired by whenever's approach
+    # https://github.com/javan/whenever
+
     desc "Updates the crontab"
-    task :setup, :roles => :db do
-      template "mysql/backup.sh.erb", mysql_backup_script
+     task :setup, :roles => :db do
+       template "mysql/backup.sh.erb", mysql_backup_script
 
-      comment_open  = '# Begin Matross generated task for MySQL Backup'
-      comment_close = '# End Matross generated task for MySQL Backup'
+       comment_open  = '# Begin Matross generated task for MySQL Backup'
+       comment_close = '# End Matross generated task for MySQL Backup'
 
-      mysql_command    = "#{mysql_backup_script} 2>&1 >> #{shared_path}/log/mysql_backup.log"
-      mysql_cron_entry = "#{mysql_backup_cron_schedule} #{mysql_backup_cron_command}"
-      mysql_cron       = [comment_open, mysql_cron_entry, comment_close].compact.join("\n")
+       cron_command = "#{mysql_backup_script} 2>&1 >> #{shared_path}/log/mysql_backup.log"
+       cron_entry   = "#{mysql_backup_cron_schedule} #{cron_command}"
+       cron         = [comment_open, cron_entry, comment_close].compact.join("\n")
 
-      current_crontab = ''
-      begin
-        current_crontab = run("crontab -l -u #{user} 2> /dev/null")
-      rescue Capistrano::CommandError
-      end
-      contains_open_comment  = current_crontab =~ /^#{comment_open}\s*$/
-      contains_close_comment = current_crontab =~ /^#{comment_close}\s*$/
+       current_crontab = ''
+       begin
+         # Some cron implementations require all non-comment lines to be newline-
+         # terminated. (issue #95) Strip all newlines and replace with the default
+         # platform record seperator ($/)
+         current_crontab = capture("crontab -l -u #{user} 2> /dev/null").gsub!(/\s+$/, $/)
+       rescue Capistrano::CommandError
+         logger.debug 'The user has no crontab'
+       end
+       contains_open_comment  = current_crontab =~ /^#{comment_open}\s*$/
+       contains_close_comment = current_crontab =~ /^#{comment_close}\s*$/
 
-      # If an existing identier block is found, replace it with the new cron entries
-      if contains_open_comment && contains_close_comment
-        current_crontab.gsub(/^#{comment_open}\s*$.+^#{comment_close}\s*$/m, mysql_cron.chomp)
-      else  # Otherwise, append the new cron entries after any existing ones
-        [read_crontab, mysql_cron].join("\n\n")
-      end.gsub(/\n{3,}/, "\n\n")  # More than two newlines becomes just two.
+       # If an existing identier block is found, replace it with the new cron entries
+       if contains_open_comment && contains_close_comment
+         updated_crontab = current_crontab.gsub(/^#{comment_open}\s*$.+^#{comment_close}\s*$/m, cron.chomp)
+       else  # Otherwise, append the new cron entries after any existing ones
+         updated_crontab = current_crontab.empty? ? cron : [current_crontab, cron].join("\n")
+       end.gsub(/\n{2,}/, "\n")  # More than two newlines becomes just two.
 
-    end
+       temp_crontab_file = "/tmp/matross_#{user}_crontab"
+       put updated_crontab, temp_crontab_file
+       run "crontab -u #{user} #{temp_crontab_file}"
+       run "rm #{temp_crontab_file}"
+     end
   end
 end

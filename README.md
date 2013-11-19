@@ -135,26 +135,33 @@ This recipes creates and configures the virtual_host for the application. [This 
 
 Requires having [`mysql2`](http://rubygems.org/gems/mysql2) available in the application. In our MySQL recipe we dynamically generate a `database.yml` based on the variables that should be set globally or per-stage.
 
+The backup routine requires [`s3cmd`](http://s3tools.org/s3cmd) installed and properly configured. The key pair must have write access to the backup bucket on S3.
+
 Overwritable template: [`database.yml.erb`](lib/matross/templates/mysql/database.yml.erb)
 
 > Variables
 
-| Variable           | Default value                          | Description                                                                     |
-| ---                | ---                                    | ---                                                                             |
-| `:database_config` | `"#{shared_path}/config/database.yml"` | Location of the configuration file                                              |
-| `:mysql_host`      | None                                   | MySQL host address                                                              |
-| `:mysql_database`  | None                                   | MySQL database name. We automatically substitute dashes `-` for underscores `_` |
-| `:mysql_user`      | None                                   | MySQL user                                                                      |
-| `:mysql_passwd`    | None                                   | MySQL password                                                                  |
+| Variable                      | Default value                              | Description                                                      |
+| ---                           | ---                                        | ---                                                              |
+| `:database_config`            | `"#{shared_path}/config/database.yml"`     | Location of the configuration file                               |
+| `:mysql_host`                 | None                                       | MySQL host address                                               |
+| `:mysql_database`             | None                                       | MySQL database name. Dashes `-` are *gsubed* for underscores `_` |
+| `:mysql_user`                 | None                                       | MySQL user                                                       |
+| `:mysql_passwd`               | None                                       | MySQL password                                                   |
+| `:mysql_backup_script`        | `"#{shared_path}/matross/mysql_backup.sh"` | MySQL backup script location                                     |
+| `:mysql_backup_cron_schedule` | `'30 3 * * *'`                             | Cron schedule for the backup script                              |
+| `:mysql_backup_bucket`        | None                                       | Bucket used to store the dumps                                   |
+| `:mysql_backup_prefix`        | None                                       | Flat file prefix for the backup files                            |
 
 > Tasks
 
-| Task                | Description                                                         |
-| ---                 | ---                                                                 |
-| `mysql:setup`       | Creates the `database.yml` in the `shared_path`                     |
-| `mysql:symlink`     | Creates a symlink for the `database.yml` file in the `current_path` |
-| `mysql:create`      | Creates the database if it hasn't been created                      |
-| `mysql:schema_load` | Loads the schema if there are no tables in the DB                   |
+| Task                 | Description                                                                               |
+| ---                  | ---                                                                                       |
+| `mysql:setup`        | Creates the `database.yml` in the `shared_path`                                           |
+| `mysql:symlink`      | Creates a symlink for the `database.yml` file in the `current_path`                       |
+| `mysql:create`       | Creates the database if it hasn't been created                                            |
+| `mysql:schema_load`  | Loads the schema if there are no tables in the DB                                         |
+| `mysql:backup:setup` | Creates the backup script and configures the user's cron - *Not hooked to any other task* |
 
 ## Mongoid
 
@@ -197,7 +204,6 @@ Procfile task: `dj: bundle exec rake jobs:work` or `dj_<%= queue_name %>: bundle
 | Task                   | Description                                                       |
 | ---                    | ---                                                               |
 | `delayed_job:procfile` | Defines how `delayed_job` should be run in a temporary `Procfile` |
-
 
 ### Fog (AWS)
 
