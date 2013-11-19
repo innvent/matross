@@ -130,7 +130,6 @@ This recipes creates and configures the virtual_host for the application. [This 
 | `nginx:lock`   | Sets up the a basic http auth on the virtual host |
 | `nginx:unlock` | Removes the basic http auth                       |
 
-
 ### MySQL
 
 Requires having [`mysql2`](http://rubygems.org/gems/mysql2) available in the application. In our MySQL recipe we dynamically generate a `database.yml` based on the variables that should be set globally or per-stage.
