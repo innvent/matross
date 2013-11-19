@@ -65,8 +65,8 @@ namespace :mysql do
 
       current_crontab = ''
       begin
-        # Some cron implementations require all non-comment lines to be newline-
-        # terminated. (issue #95) Strip all newlines and replace with the default
+        # Some cron implementations require all non-comment lines to be
+        # newline-terminated. Strip all newlines and replace with the default
         # platform record seperator ($/)
         current_crontab = capture("crontab -l -u #{user} 2> /dev/null").gsub!(/\s+$/, $/)
       rescue Capistrano::CommandError
@@ -80,7 +80,7 @@ namespace :mysql do
         updated_crontab = current_crontab.gsub(/^#{comment_open}\s*$.+^#{comment_close}\s*$/m, cron.chomp)
       else  # Otherwise, append the new cron entries after any existing ones
         updated_crontab = current_crontab.empty? ? cron : [current_crontab, cron].join("\n")
-      end.gsub(/\n{2,}/, "\n")  # More than two newlines becomes just two.
+      end.gsub(/\n{2,}/, "\n")  # More than one newline becomes just one.
 
       temp_crontab_file = "/tmp/matross_#{user}_crontab"
       put updated_crontab, temp_crontab_file
