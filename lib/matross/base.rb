@@ -20,7 +20,7 @@ end
 
 namespace :base do
 
-  task :logrotate, :roles => :app do
+  task :logrotate, :roles => [:app, :dj] do
     run "mkdir -p #{shared_path}/config"
     template "base/logrotate.erb", "#{shared_path}/config/logrotate"
     run "#{sudo} ln -nfs #{shared_path}/config/logrotate /etc/logrotate.d/#{application}"
