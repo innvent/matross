@@ -51,6 +51,7 @@ namespace :mysql do
     desc "Updates the crontab"
      task :setup, :roles => :db do
        template "mysql/backup.sh.erb", mysql_backup_script
+       run "chmod +x #{mysql_backup_script}"
 
        comment_open  = '# Begin Matross generated task for MySQL Backup'
        comment_close = '# End Matross generated task for MySQL Backup'
