@@ -17,7 +17,7 @@ namespace :foreman do
     cmd = <<-EOF.gsub(/^\s+/, '')
       rm -f #{shared_path}/Procfile-matross;
       for file in #{current_path}/Procfile #{shared_path}/Procfile.*; do \
-        cat $file >> #{shared_path}/Procfile-matross;
+        [ -f $file ] && cat $file >> #{shared_path}/Procfile-matross;
       done;
       rm -f #{shared_path}/Procfile.*;
       cat <(echo \"RAILS_ENV=#{rails_env.to_s.shellescape}\") \
