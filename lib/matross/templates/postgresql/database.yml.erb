@@ -3,7 +3,7 @@
   encoding: utf8
   host: <%= postgresql_host %>
   database: <%= postgresql_database.gsub("-", "_") %>
-  username: <%= postgresql_user %>
+  username: <%= postgresql_user.gsub("-", "_") %>
   password: <%= postgresql_passwd %>
   pool: 5
   reconnect: true
