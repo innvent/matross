@@ -273,7 +273,21 @@ Procfile task: `faye: bundle exec rackup  <%= faye_ru %> -s thin -E <%= rails_en
 
 ### Local Assets
 
-This recipe overwrites the default assets precompilation by compiling them locally and then uploading the result to the server.
+In order to deal with memory or CPU constrained production servers, this recipe overwrites the default assets precompilation by compiling them locally and then uploading the result to the server.
+
+Rake precompiles assets in a `production` to properly generate file names with hashes. One of the gotchas to this is that by default Rails initializes the entire applicaction when executing the `assets:precompile` task. If you use different databases in production and development and run into database connection errors with this task you can override this behavior.
+
+> `config/application.rb`
+
+```ruby
+module AwesomeApplication
+  class Application < Rails::Application
+    ...
+    config.assets.initialize_on_precompile = false if Rails.env.production?
+    ...
+  end
+end
+```
 
 ## Full Example
 
