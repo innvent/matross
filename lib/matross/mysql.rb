@@ -59,7 +59,7 @@ namespace :mysql do
       comment_open  = '# Begin Matross generated task for MySQL Backup'
       comment_close = '# End Matross generated task for MySQL Backup'
 
-      cron_command = "#{mysql_backup_script} 2>&1 >> #{shared_path}/log/mysql_backup.log"
+      cron_command = "#{mysql_backup_script} >> #{shared_path}/log/mysql_backup.log 2>&1"
       cron_entry   = "#{mysql_backup_cron_schedule} #{cron_command}"
       cron         = [comment_open, cron_entry, comment_close].compact.join("\n")
 
