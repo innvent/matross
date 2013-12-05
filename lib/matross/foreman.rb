@@ -71,14 +71,14 @@ namespace :foreman do
 
   desc "Symlink upstart logs to application shared/log"
   task :log, except: { no_release: true } do
-    capture("ls #{shared_path}/upstart -1").split(/\r?\n/).each { |line|
-      log = File.basename(line.sub(/\.conf\Z/, ".log"))
-      run <<-EOF.gsub(/^\s+/, '')
-        #{sudo} touch /var/log/upstart/#{log} &&
-        #{sudo} chmod o+r /var/log/upstart/#{log} &&
-        ln -nfs /var/log/upstart/#{log} #{shared_path}/log/#{log}
-      EOF
-    }
+    run <<-EOF.gsub(/^s+/, '')
+    ls #{shared_path}/upstart -1 | while read line; do
+      logname=$(basename $line | sed "s/.conf$/.log/");
+      #{sudo} touch /var/log/upstart/${logname} &&
+      #{sudo} chmod o+r /var/log/upstart/${logname} &&
+      ln -nfs /var/log/upstart/${logname} #{shared_path}/log/${logname};
+    done
+    EOF
   end
   after "foreman:export", "foreman:log"
 
