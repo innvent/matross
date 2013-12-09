@@ -94,11 +94,11 @@ Procfile task: `web: bundle exec unicorn -c <%= unicorn_config %> -E <%= rails_e
 
 > Variables
 
-| Variable           | Default value                        | Description                        |
-| ---                | ---                                  | ---                                |
-| `:unicorn_config`  | `"#{shared_path}/config/unicorn.rb"` | Location of the configuration file |
-| `:unicorn_log`     | `"#{shared_path}/log/unicorn.log"`   | Location of unicorn log            |
-| `:unicorn_workers` | `1`                                  | Number of unicorn workers          |
+| Variable           | Default value                               | Description                        |
+| ---                | ---                                         | ---                                |
+| `:unicorn_config`  | `"#{shared_path}/config/unicorn.rb"`        | Location of the configuration file |
+| `:unicorn_log`     | `"#{shared_path}/log/unicorn.log"`          | Location of unicorn log            |
+| `:unicorn_workers` | Number of cores specified by /proc/cpuinfo  | Number of unicorn workers          |
 
 > Tasks
 

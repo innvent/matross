@@ -2,8 +2,7 @@ dep_included? 'unicorn'
 
 _cset(:unicorn_config)  { "#{shared_path}/config/unicorn.rb" }
 _cset(:unicorn_log)     { "#{shared_path}/log/unicorn.log" }
-_cset :unicorn_workers, 1
-
+_cset(:unicorn_workers) { capture("grep -c processor /proc/cpuinfo").to_i }
 namespace :unicorn do
 
   desc "Initial Setup"
