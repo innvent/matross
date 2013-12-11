@@ -56,6 +56,8 @@ If there are any environment variables that you want to use, just set them in a 
 CUSTOM_TASK_ENV=boost
 ```
 
+If you require different values for these environment variables across deployment stages, define them separately in `.env-#{stage}` files, for example `.env-production`.
+
 ## Recipes
 
 ### Foreman
