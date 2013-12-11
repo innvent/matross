@@ -22,6 +22,7 @@ namespace :foreman do
       rm -f #{shared_path}/Procfile.*;
       cat <(echo \"RAILS_ENV=#{rails_env.to_s.shellescape}\") \
         $(test -f #{current_path}/.env && echo \"$_\") > \
+        $(test -f #{current_path}/.env-#{stage} && echo \"$_\") > \
         #{shared_path}/.env-matross;
     EOF
     run cmd, shell: "/bin/bash"
