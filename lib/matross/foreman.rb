@@ -3,6 +3,7 @@ dep_included? 'foreman'
 _cset(:foreman_user)  { user }
 _cset :foreman_bin,   "bundle exec foreman"
 _cset :foreman_procs, {}
+_cset :rails_env,     ''
 
 namespace :foreman do
 
