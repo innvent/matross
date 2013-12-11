@@ -35,3 +35,4 @@ doc
 pkg
 
 Gemfile.lock
+.ruby-version
