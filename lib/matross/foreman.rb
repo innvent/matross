@@ -31,7 +31,7 @@ namespace :foreman do
   before "foreman:export", "foreman:setup"
 
   desc "Export the Procfile to Ubuntu's upstart scripts"
-  task :export, :except => { no_release => true } do
+  task :export, :except => { :no_release => true } do
     matross_path = "#{shared_path}/matross"
     run "mkdir -p #{matross_path}"
     upload File.expand_path("../templates/foreman", __FILE__), matross_path,
