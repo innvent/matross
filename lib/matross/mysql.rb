@@ -99,7 +99,7 @@ namespace :mysql do
               --user=#{mysql_user}
               #{'--password=' + mysql_passwd unless mysql_passwd.empty?}
               --host=#{mysql_host}
-              #{mysql_database} |
+              #{mysql_database.gsub("-", "_")} |
              gzip > "$(date +'#{mysql_database}_\%Y\%m\%d\%H\%M.sql.gz')"} * ' '
     end
 
@@ -109,7 +109,7 @@ namespace :mysql do
       most_recent_bkp = capture(%W{find #{shared_path} -type f -name
                                     '#{mysql_database}_*.sql.gz'} * ' '
                                ).split.sort.last
-      abort "No dump found. Run mysql:dump:do." if most_recent_bkp.nil?
+      abort 'No dump found. Run mysql:dump:do' if most_recent_bkp.nil?
 
       download most_recent_bkp, "dumps", :via => :scp
       run_locally "gzip -d dumps/#{File.basename(most_recent_bkp)}"
