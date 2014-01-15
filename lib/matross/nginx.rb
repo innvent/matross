@@ -4,8 +4,8 @@ namespace :nginx do
 
   desc "Setup application in nginx"
   task :setup, :roles => :web do
-    template "nginx/nginx_virtual_host_conf.erb", "/tmp/#{application}"
-    run "#{sudo} mv /tmp/#{application} /etc/nginx/sites-available/#{application}"
+    template "nginx/nginx_virtual_host_conf.erb", "/tmp/nginx_virtual_host_conf"
+    run "#{sudo} mv /nginx_virtual_host_conf /etc/nginx/sites-available/#{application}"
     run "#{sudo} ln -fs /etc/nginx/sites-available/#{application} /etc/nginx/sites-enabled/#{application}"
   end
   after "deploy:setup", "nginx:setup"
