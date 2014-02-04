@@ -1,5 +1,7 @@
 require 'bundler'
 require 'matross/errors'
+require 'matross/namespace'
+require 'capistrano/configuration'
 
 def template(from, to)
   override_template = File.join(Dir.pwd, 'config/matross', from)
@@ -8,7 +10,10 @@ def template(from, to)
   else
     erb = File.read(File.expand_path("../templates/#{from}", __FILE__))
   end
-  put ERB.new(erb, nil, '-').result(binding), to
+
+  conf = Capistrano::Configuration.env.instance_eval('config')
+  ns = Matross::Namespace.new(conf)
+  upload! StringIO.new(ERB.new(erb, nil, '-').result(ns.get_binding)), to
 end
 
 def dep_included?(dependency)
@@ -17,13 +22,13 @@ def dep_included?(dependency)
     raise Matross::MissingDepError, "recipe requires the #{dependency} gem"
   end
 end
-
-namespace :base do
-
-  task :logrotate, :roles => [:app, :dj] do
-    run "mkdir -p #{shared_path}/config"
-    template "base/logrotate.erb", "#{shared_path}/config/logrotate"
-    run "#{sudo} ln -nfs #{shared_path}/config/logrotate /etc/logrotate.d/#{application}"
-  end
-  after "deploy:setup", "base:logrotate"
-end
+#
+#namespace :base do
+#
+#  task :logrotate, :roles => [:app, :dj] do
+#    run "mkdir -p #{shared_path}/config"
+#    template "base/logrotate.erb", "#{shared_path}/config/logrotate"
+#    run "#{sudo} ln -nfs #{shared_path}/config/logrotate /etc/logrotate.d/#{application}"
+#  end
+#  after "deploy:setup", "base:logrotate"
+#end
