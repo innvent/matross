@@ -153,7 +153,7 @@ namespace :mysql do
               #{db_config['database']}} * ' '
     end
     before "mysql:dump:apply_remotely", "foreman:stop"
-    after  "mysql:dump:apply_remotely", "foreman:start"
+    after  "mysql:dump:apply_remotely", "foreman:restart"
 
   end
 end
