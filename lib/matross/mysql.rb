@@ -6,20 +6,20 @@ _cset :mysql_backup_cron_schedule,  '30 3 * * *'
 
 namespace :mysql do
 
-  desc "Creates the database.yml file in shared path"
+  desc "Create the database.yml file in shared path"
   task :setup, :roles => [:app, :dj] do
     run "mkdir -p #{shared_path}/config"
     template "mysql/database.yml.erb", database_config
   end
   after "deploy:setup", "mysql:setup"
 
-  desc "Updates the symlink for database.yml for deployed release"
+  desc "Update the symlink for database.yml for deployed release"
   task :symlink, :roles => [:app, :dj] do
     run "ln -nfs #{database_config} #{release_path}/config/database.yml"
   end
   after "bundle:install", "mysql:symlink"
 
-  desc "Creates the application database"
+  desc "Create the application database"
   task :create, :roles  => :db do
     sql = <<-EOF.gsub(/^\s+/, '')
       CREATE DATABASE IF NOT EXISTS #{mysql_database.gsub("-", "_")};
@@ -31,7 +31,7 @@ namespace :mysql do
   end
   after "mysql:setup", "mysql:create"
 
-  desc "Loads the application schema into the database"
+  desc "Load the application schema into the database"
   task :schema_load, :roles => :db do
     sql = <<-EOF.gsub(/^\s+/, '')
       SELECT count(*) FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '#{mysql_database.gsub("-", "_")}');
@@ -51,7 +51,7 @@ namespace :mysql do
 
     # This routine is heavily inspired by whenever's approach
     # https://github.com/javan/whenever
-    desc "Updates the crontab"
+    desc "Update the crontab with the backup entry"
     task :setup, :roles => :db do
       template "mysql/backup.sh.erb", mysql_backup_script
       run "chmod +x #{mysql_backup_script}"
@@ -91,7 +91,7 @@ namespace :mysql do
 
   namespace :dump do
 
-    desc "Dumps the application database"
+    desc "Dump the application database"
     task :do, :roles => :db, :except => { :no_release => true } do
       run "mkdir -p #{shared_path}/dumps"
       run %W{cd #{shared_path}/dumps &&
@@ -103,7 +103,7 @@ namespace :mysql do
              gzip > "$(date +'#{mysql_database}_\%Y\%m\%d\%H\%M.sql.gz')"} * ' '
     end
 
-    desc "Downloads a copy of the last generated database dump"
+    desc "Download a copy of the last generated database dump"
     task :get, :roles => :db, :except => { :no_release => true } do
       run_locally "mkdir -p dumps"
       most_recent_bkp = capture(%W{find #{shared_path} -type f -name
@@ -127,5 +127,33 @@ namespace :mysql do
                       #{'--password=' + db_config['password'] unless db_config['password'].nil?}
                       #{db_config['database']} < #{most_recent_bkp}} * ' '
     end
+
+    desc "Upload a copy of the last generated database dump"
+    task :post, :roles => :db, :except => { :no_release => true } do
+      run "mkdir -p #{shared_path}/dumps"
+      most_recent_bkp = %x[find dumps -type f -name '*.sql'].split.sort.last
+      abort 'No dump found. Run mysql:dump:get' if most_recent_bkp.nil?
+
+      run_locally "gzip -k #{most_recent_bkp}"
+      zipped_bkp = most_recent_bkp + '.gz'
+
+      upload zipped_bkp, "#{shared_path}/dumps", :via => :scp
+      run_locally "rm #{zipped_bkp}"
+    end
+
+    desc "Apply the latest uploaded dump in the remote server"
+    task :apply_remotely, :roles => :db, :except => { :no_release => true } do
+      most_recent_bkp = capture(%W{find #{shared_path} -type f -name '*.sql.gz'} * ' ').split.sort.last
+      abort 'No dump found. Run mysql:dump:post' if most_recent_bkp.nil?
+
+      db_config = YAML.load(capture("cat #{shared_path}/config/database.yml"))[rails_env]
+      run %W{zcat #{most_recent_bkp} | mysql --user=#{db_config['username']}
+              --host=#{db_config['host']}
+              #{'--password=' + db_config['password'] unless db_config['password'].nil?}
+              #{db_config['database']}} * ' '
+    end
+    before "mysql:dump:apply_remotely", "foreman:stop"
+    after  "mysql:dump:apply_remotely", "foreman:start"
+
   end
 end
