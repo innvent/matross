@@ -1,0 +1,127 @@
+dep_included? 'foreman'
+
+set :foreman_user,  fetch(:user)
+set :foreman_procs, {}
+set :rails_env,     ''
+
+namespace :foreman do
+  #TODO: Move from 'roles :all' to 'release_roles :all' implemented in 3.1
+  #TODO: Remove previous 'bundle exec' configuration, use command mapping
+
+  desc "Pre-setup, creates the shared upstart folder"
+  task :pre_setup do
+    on roles :all, exclude: :no_release do
+      execute :mkdir, '-p', "#{shared_path}/upstart"
+    end
+  end
+
+  desc "Merges all partial Procfiles and defines a specific dotenv"
+  task :setup => :pre_setup do
+    on roles :all, exclude: :no_release do
+      # Don't raise an error if file doesn't exist
+      test :echo, "<#{current_path}/Procfile",
+        ">#{shared_path}/Procfile-matross"
+      procfiles = capture(
+        :find, shared_path, "-maxdepth", "1", "-name", "Procfile.*").split
+      unless procfiles.empty?
+        execute :cat, *procfiles, ">>#{shared_path}/Procfile-matross" 
+        execute :rm, *procfiles
+      end
+
+      execute :echo, "RAILS_ENV=#{fetch(:rails_env).shellescape}",
+        ">#{shared_path}/.env-matross"
+      ["#{current_path}/.env", "#{current_path}/.env-#{fetch :stage}"].each do |f|
+        test :echo, "<#{f}", ">>#{shared_path}/.env-matross"
+      end
+    end
+  end
+
+  desc "Symlink configuration scripts"
+  task :symlink => :setup do
+    on roles :all, exclude: :no_release do
+      execute :ln, "-nfs", "#{shared_path}/Procfile-matross", current_path
+      execute :ln, "-nfs", "#{shared_path}/.env-matross", current_path
+    end
+  end
+
+  desc "Export the Procfile to Ubuntu's upstart scripts"
+  task :export => :symlink do
+    on roles :all, exclude: :no_release do
+      execute :mkdir, '-p', "#{shared_path}/matross"
+      # TODO: Make foreman template is overridable
+      upload! File.expand_path("../../templates/foreman", __FILE__),
+        "#{shared_path}/matross",
+        :recursive => true
+
+      # By default spawn one instance of every process
+      procs = {}
+      capture(:cat, "#{current_path}/Procfile-matross").split("\n").each do |line|
+        process = line[/^([A-Za-z0-9_]+):\s*(.+)$/, 1]
+        procs[process] = 1
+      end
+      procs.merge!(fetch :foreman_procs)
+
+      proc_args = unless procs.empty? then
+                    procs.inject("-c "){|a, o| a += "#{o[0]}=#{o[1]},"}.chop
+                  else "" end
+
+      within current_path do
+        execute :foreman, "export", "upstart", "#{shared_path}/upstart",
+          "-f", "Procfile-matross",
+          "-a", "#{fetch :application}",
+          "-u", "#{fetch :foreman_user}",
+          "-l", "#{shared_path}/log",
+          "-t", "#{shared_path}/matross/foreman",
+          "-e", "#{current_path}/.env-matross",
+          proc_args
+      end
+
+      sudo :cp, "#{shared_path}/upstart/*", "/etc/init/"
+    end
+  end
+
+  desc "Symlink upstart logs to application shared/log"
+  task :log => :export do
+    on roles :all, exclude: :no_release do
+      inits = capture(:find, "#{shared_path}/upstart", "-name", "*.conf").split
+      inits.each do |init|
+        init.chomp!(".conf")
+        sudo :touch, "/var/log/upstart/#{init}"
+        sudo :chmod, "o+r", "/var/log/upstart/#{init}"
+        execute :ln, "-nfs", "/var/log/upstart/#{init}", "#{shared_path}/log"
+      end
+    end
+  end
+
+  desc "(Re)start services"
+  task :restart do
+    on roles :all, exclude: :no_release do
+      begin 
+        sudo :start, fetch(:application)
+      rescue SSHKit::Command::Failed
+        sudo :restart, fetch(:application)
+      end
+    end
+  end
+
+  after :log, :restart
+  after "deploy:finished", :restart
+
+  desc "Stop services"
+  task :stop do
+    on roles :all, exclude: :no_release do
+      sudo :stop, fetch(:application)
+    end
+  end
+
+  desc "Remove upstart scripts"
+  task :remove do
+    on roles :all, exclude: :no_release do
+      inits = capture(:find, "#{shared_path}/upstart", "-name", "*.conf").split
+      inits.each do |init|
+        init.chomp!(".conf")
+        sudo :rm, "/etc/init/#{init}"
+      end
+    end
+  end
+end
