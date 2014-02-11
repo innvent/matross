@@ -85,10 +85,10 @@ namespace :foreman do
     on roles :all, exclude: :no_release do
       inits = capture(:find, "#{shared_path}/upstart", "-name", "*.conf").split
       inits.each do |init|
-        init.chomp!(".conf")
-        sudo :touch, "/var/log/upstart/#{init}"
-        sudo :chmod, "o+r", "/var/log/upstart/#{init}"
-        execute :ln, "-nfs", "/var/log/upstart/#{init}", "#{shared_path}/log"
+        logname = "#{File.basename(init).chomp(".conf")}.log"
+        sudo :touch, "/var/log/upstart/#{logname}"
+        sudo :chmod, "o+r", "/var/log/upstart/#{logname}"
+        execute :ln, "-nfs", "/var/log/upstart/#{logname}", "#{shared_path}/log"
       end
     end
   end
