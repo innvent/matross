@@ -19,7 +19,7 @@ namespace :foreman do
   task :setup => :pre_setup do
     on roles :all, exclude: :no_release do
       # Don't raise an error if file doesn't exist
-      execute :rm, "-f", "#{release_path}/Procfile-matross"
+      execute :rm, "-f", "#{shared_path}/Procfile-matross"
       procfiles = capture(
         :find, shared_path, "-maxdepth", "1", "-name", "Procfile.*").split
       procfiles <<  "#{release_path}/Procfile" if test "[ -f '#{release_path}/Procfile' ]"
