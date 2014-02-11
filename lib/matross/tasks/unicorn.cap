@@ -17,7 +17,7 @@ namespace :unicorn do
     end
   end
 
-  before "foreman:restart", :setup
+  before "foreman:restart", "unicorn:setup"
 
   desc "Writes the unicorn part of the Procfile"
   task :procfile do
@@ -29,5 +29,5 @@ namespace :unicorn do
     end
   end
 
-  before "foreman:setup", :procfile
+  before "foreman:setup", "unicorn:procfile"
 end
