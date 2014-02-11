@@ -18,20 +18,25 @@ namespace :foreman do
   desc "Merges all partial Procfiles and defines a specific dotenv"
   task :setup => :pre_setup do
     on roles :all, exclude: :no_release do
-      # Don't raise an error if file doesn't exist
       execute :rm, "-f", "#{shared_path}/Procfile-matross"
+
+      if test "[ -f '#{release_path}/Procfile' ]" then
+        execute :cp, "#{release_path}/Procfile" , "#{shared_path}/Procfile-matross" 
+      else
+        execute :touch, "#{shared_path}/Procfile-matross" 
+      end
+
       procfiles = capture(
         :find, shared_path, "-maxdepth", "1", "-name", "Procfile.*").split
-      procfiles <<  "#{release_path}/Procfile" if test "[ -f '#{release_path}/Procfile' ]"
       unless procfiles.empty?
-        execute :cat, *procfiles, ">#{shared_path}/Procfile-matross" 
+        execute :cat, *procfiles, ">>#{shared_path}/Procfile-matross" 
         execute :rm, *procfiles
       end
 
       execute :echo, "RAILS_ENV=#{fetch(:rails_env).shellescape}",
         ">#{shared_path}/.env-matross"
       ["#{release_path}/.env", "#{release_path}/.env-#{fetch :stage}"].each do |f|
-        test :echo, "<#{f}", ">>#{shared_path}/.env-matross"
+        execute :cat, f, ">>#{shared_path}/.env-matross" if test "[ -f '#{f}' ]"
       end
     end
   end
