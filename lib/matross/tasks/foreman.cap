@@ -69,7 +69,7 @@ namespace :foreman do
         execute :foreman, "export", "upstart", "#{shared_path}/upstart",
           "-f", "Procfile-matross",
           "-a", "#{fetch :application}",
-          "-u", "#{fetch :foreman_user}",
+          "-u", "#{fetch :user}",
           "-l", "#{shared_path}/log",
           "-t", "#{shared_path}/matross/foreman",
           "-e", "#{current_path}/.env-matross",
