@@ -19,10 +19,10 @@ namespace :foreman do
   task :setup => :pre_setup do
     on roles :all, exclude: :no_release do
       # Don't raise an error if file doesn't exist
-      execute :rm, "-f", "#{current_path}/Procfile-matross"
+      execute :rm, "-f", "#{release_path}/Procfile-matross"
       procfiles = capture(
         :find, shared_path, "-maxdepth", "1", "-name", "Procfile.*").split
-      procfiles <<  "#{current_path}/Procfile" if test "[ -f '#{current_path}/Procfile' ]"
+      procfiles <<  "#{release_path}/Procfile" if test "[ -f '#{release_path}/Procfile' ]"
       unless procfiles.empty?
         execute :cat, *procfiles, ">#{shared_path}/Procfile-matross" 
         execute :rm, *procfiles
@@ -30,7 +30,7 @@ namespace :foreman do
 
       execute :echo, "RAILS_ENV=#{fetch(:rails_env).shellescape}",
         ">#{shared_path}/.env-matross"
-      ["#{current_path}/.env", "#{current_path}/.env-#{fetch :stage}"].each do |f|
+      ["#{release_path}/.env", "#{release_path}/.env-#{fetch :stage}"].each do |f|
         test :echo, "<#{f}", ">>#{shared_path}/.env-matross"
       end
     end
@@ -39,8 +39,8 @@ namespace :foreman do
   desc "Symlink configuration scripts"
   task :symlink => :setup do
     on roles :all, exclude: :no_release do
-      execute :ln, "-nfs", "#{shared_path}/Procfile-matross", current_path
-      execute :ln, "-nfs", "#{shared_path}/.env-matross", current_path
+      execute :ln, "-nfs", "#{shared_path}/Procfile-matross", release_path
+      execute :ln, "-nfs", "#{shared_path}/.env-matross", release_path
     end
   end
 
@@ -55,7 +55,7 @@ namespace :foreman do
 
       # By default spawn one instance of every process
       procs = {}
-      capture(:cat, "#{current_path}/Procfile-matross").split("\n").each do |line|
+      capture(:cat, "#{release_path}/Procfile-matross").split("\n").each do |line|
         process = line[/^([A-Za-z0-9_]+):\s*(.+)$/, 1]
         procs[process] = 1
       end
@@ -65,14 +65,14 @@ namespace :foreman do
                     procs.inject("-c "){|a, o| a += "#{o[0]}=#{o[1]},"}.chop
                   else "" end
 
-      within current_path do
+      within release_path do
         execute :foreman, "export", "upstart", "#{shared_path}/upstart",
           "-f", "Procfile-matross",
           "-a", "#{fetch :application}",
           "-u", "#{fetch :user}",
           "-l", "#{shared_path}/log",
           "-t", "#{shared_path}/matross/foreman",
-          "-e", "#{current_path}/.env-matross",
+          "-e", "#{release_path}/.env-matross",
           proc_args
       end
 
