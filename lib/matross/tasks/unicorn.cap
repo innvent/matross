@@ -25,7 +25,7 @@ namespace :unicorn do
       unicorn_cmd = SSHKit::Command.new(:unicorn,
                                         "-c", fetch(:unicorn_config),
                                         "-E", fetch(:rails_env)).to_s
-      upload! StringIO.new("app: #{unicorn_cmd}"), "#{shared_path}/Procfile.app"
+      upload! StringIO.new("app: #{unicorn_cmd}\n"), "#{shared_path}/Procfile.app"
     end
   end
 
