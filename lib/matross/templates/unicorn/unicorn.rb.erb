@@ -1,7 +1,7 @@
 app_path            = "<%= current_path %>"
 
 working_directory   "#{app_path}"
-pid                 "#{app_path}/tmp/pids/unicorn.pid"
+pid                 "/tmp/unicorn.<%= application %>.pid"
 
 listen              "/tmp/unicorn.<%= application %>.sock"
 worker_processes    <%= unicorn_workers %>
