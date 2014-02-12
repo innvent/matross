@@ -2,7 +2,6 @@ dep_included? 'foreman'
 
 set :foreman_user,  fetch(:user)
 set :foreman_procs, {}
-set :rails_env,     'production'
 
 namespace :foreman do
   #TODO: Move from 'roles :all' to 'release_roles :all' implemented in 3.1
