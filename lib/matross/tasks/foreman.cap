@@ -109,7 +109,7 @@ namespace :foreman do
   end
 
   after :log, :restart
-  after "deploy:finished", "foreman:log"
+  after "deploy:updated", "foreman:log"
 
   desc "Stop services"
   task :stop do
