@@ -14,7 +14,7 @@ namespace :nginx do
     end
   end
 
-  after 'deploy:started', 'nginx:setup'
+  after 'deploy:published', 'nginx:setup'
 
   desc 'Reload nginx configuration'
   task :reload do
@@ -41,7 +41,7 @@ namespace :nginx do
     end
   end
 
-  after 'deploy:started', 'nginx:reload'
+  after 'nginx:setup', 'nginx:reload'
   after 'nginx:lock', 'nginx:reload'
   after 'nginx:unlock', 'nginx:reload'
 end
