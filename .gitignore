@@ -36,3 +36,6 @@ pkg
 
 Gemfile.lock
 .ruby-version
+
+# Vagrant
+.vagrant
