@@ -39,7 +39,7 @@ namespace :nginx do
       nginx_lock = "\\n        auth_basic \"Restricted\";\\n        auth_basic_user_file #{shared_path.to_s.gsub('/', '\\/')}\\/.htpasswd;"
       sudo :sed, '-i', "'s/.*location @#{fetch :application}.*/&#{nginx_lock}/'",
         "/etc/nginx/sites-available/#{fetch :application}"
-      run "echo #{fetch(:htpasswd).shellescape} > #{shared_path}/.htpasswd"
+      execute :echo, "#{fetch(:htpasswd).shellescape}" ">#{shared_path}/.htpasswd"
     end
   end
 
