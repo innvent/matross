@@ -25,6 +25,7 @@ namespace :nginx do
     end
   end
 
+  desc "Disable Basic Auth on the stage"
   task :unlock do
     on roles :web do
       sudo :sed, '-i', "/auth_basic/d",
