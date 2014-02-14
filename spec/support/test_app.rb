@@ -6,18 +6,6 @@ module TestApp
     install_test_app_with(default_config)
   end
 
-  def default_config
-    <<-'EOF'
-      set :application, "test_app"
-      set :user, "vagrant"
-      set :repo_url, 'https://github.com/innvent/matross'
-      set :branch, 'master'
-      set :deploy_to, "/home/#{fetch :user}/#{fetch :application}"
-      server '127.0.0.1:2222', user: fetch(:user), roles: %w{web app}
-      set :ssh_options, { keys: "#{ENV['HOME']}/.vagrant.d/insecure_private_key" }
-    EOF
-  end
-
   def stage
     "test"
   end
@@ -42,11 +30,28 @@ module TestApp
     File.expand_path(".")
   end
 
+  def run(command)
+    Dir.chdir(test_app_path) do
+      %x{#{command}}
+    end
+  end
+
+  def default_config
+    <<-'EOF'.gsub(/^\s+/, '')
+      set :application, "test_app"
+      set :user,        "vagrant"
+      set :repo_url,    "https://github.com/innvent/matross"
+      set :branch,      "master"
+      set :deploy_to,   "/home/#{fetch :user}/#{fetch :application}"
+
+      server '127.0.0.1:2222', user: fetch(:user), roles: %w{web app}
+      set :ssh_options, { keys: "#{ENV['HOME']}/.vagrant.d/insecure_private_key" }
+    EOF
+  end
+
   def install_test_app_with(config)
     create_test_app
-    Dir.chdir(test_app_path) do
-      %x{bundle exec cap install STAGES=#{stage}}
-    end
+    run "bundle exec cap install STAGES=#{stage} -s"
     write_local_deploy_file(config)
   end
 
@@ -62,9 +67,7 @@ module TestApp
       file.write "#{File.read(".ruby-version") }"
     end
 
-    Dir.chdir(test_app_path) do
-      %x{bundle}
-    end
+    run "bundle"
   end
 
   def write_local_deploy_file(config)
@@ -74,8 +77,6 @@ module TestApp
   end
 
   def deploy
-    Dir.chdir(test_app_path) do
-      %x{bundle exec cap test deploy}
-    end
+    run "bundle exec cap test deploy"
   end
 end
