@@ -1,3 +1,3 @@
 require 'matross/base'
 
-load File.expand_path('../tasks/foreman.cap', __FILE__)
+load File.expand_path('../tasks/foreman.rake', __FILE__)

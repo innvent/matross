@@ -1,3 +1,3 @@
 require 'matross/base'
 
-load File.expand_path('../tasks/nginx.cap', __FILE__)
+load File.expand_path('../tasks/nginx.rake', __FILE__)

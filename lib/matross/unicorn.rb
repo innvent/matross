@@ -1,3 +1,3 @@
 require 'matross/base'
 
-load File.expand_path('../tasks/unicorn.cap', __FILE__)
+load File.expand_path('../tasks/unicorn.rake', __FILE__)
