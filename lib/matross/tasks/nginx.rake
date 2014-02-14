@@ -34,8 +34,9 @@ namespace :nginx do
 
   desc "Enable Basic Auth on the stage"
   task :lock do
+    run_locally { execute :cap, "test", "nginx:unlock" }
     on roles :web do
-      invoke 'nginx:unlock'
+      #invoke 'nginx:unlock'
       nginx_lock = "\\n        auth_basic \"Restricted\";\\n        auth_basic_user_file #{shared_path.to_s.gsub('/', '\\/')}\\/.htpasswd;"
       sudo :sed, '-i', "'s/.*location @#{fetch :application}.*/&#{nginx_lock}/'",
         "/etc/nginx/sites-available/#{fetch :application}"
