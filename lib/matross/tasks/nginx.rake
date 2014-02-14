@@ -5,6 +5,8 @@ namespace :nginx do
   desc 'Setup application in nginx'
   task :setup do
     on roles :web do
+      set :server_name, fetch(:server_name) { capture(:hostname, '-f') }
+
       template 'nginx/nginx_virtual_host_conf.erb',
         '/tmp/nginx_virtual_host_conf'
       sudo :mv, '/tmp/nginx_virtual_host_conf',
