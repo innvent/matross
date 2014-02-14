@@ -22,6 +22,10 @@ module TestApp
     test_app_path.join("Gemfile")
   end
 
+  def capfile
+    test_app_path.join("Capfile")
+  end
+
   def ruby_version
     test_app_path.join(".ruby-version")
   end
