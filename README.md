@@ -112,7 +112,7 @@ Procfile task: `web: bundle exec unicorn -c <%= unicorn_config %> -E <%= rails_e
 
 ### Nginx
 
-This recipes creates and configures the virtual_host for the application. [This virtual host] has some sane defaults, suitable for most of our deployments (non-SSL). The file is created at `/etc/nginx/sites-available` and symlinked to `/etc/nginx/sites-enabled`. These are the defaults for the Nginx installation in Ubuntu. You can take a look at [our general `nginx.conf`](https://github.com/innvent/parcelles/blob/puppet/puppet/modules/nginx/files/nginx.conf).
+This recipes creates and configures the virtual_host for the application. [This virtual host] has some sane defaults, suitable for most of our deployments (non-SSL). The file is created at `/etc/nginx/sites-available` and symlinked to `/etc/nginx/sites-enabled`. These are the defaults for the Nginx installation in Ubuntu. You can take a look at [our general `nginx.conf`](https://github.com/innvent/parcelles/blob/master/puppet/modules/nginx/files/nginx.conf).
 
 Overwritable template: [`nginx_virtual_host_conf.erb`](lib/matross/templates/nginx/nginx_virtual_host_conf.erb)
 
