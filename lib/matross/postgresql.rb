@@ -5,7 +5,7 @@ _cset(:postgresql_user) { user }
 
 namespace :postgresql do
 
-  desc 'Creates the database.yml file in shared path. User is created if it does not exist'
+  desc 'Create the database.yml file in shared path. User is created if needed'
   task :setup, :roles => [:app, :dj] do
     run "mkdir -p #{shared_path}/config"
     template "postgresql/database.yml.erb", database_config
@@ -20,13 +20,13 @@ namespace :postgresql do
   end
   after 'deploy:setup', 'postgresql:setup'
 
-  desc 'Updates the symlink for database.yml for deployed release'
+  desc 'Update the symlink for database.yml for deployed release'
   task :symlink, :roles => [:app, :dj] do
     run "ln -nfs #{database_config} #{release_path}/config/database.yml"
   end
   after 'bundle:install', 'postgresql:symlink'
 
-  desc "Creates the database and loads the schema"
+  desc "Create the database and load the schema"
   task :create, :roles => :db do
     db_count = capture(%W{ #{sudo} -u postgres psql -lqt |
                            cut -d \\| -f 1 |
