@@ -1,0 +1,6 @@
+<%= rails_env %>:
+  adapter: postgresql
+  encoding: utf8
+  database: <%= postgresql_database.gsub("-", "_") %>
+  pool: 5
+  reconnect: true

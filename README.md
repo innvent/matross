@@ -167,6 +167,29 @@ Overwritable template: [`database.yml.erb`](lib/matross/templates/mysql/database
 | `mysql:dump:get`     | Downloads a copy of the last generated database dump                                      |
 | `mysql:dump:apply`   | Apply the latest dump generated stored in 'dumps' locally                                 |
 
+### PostgreSQL
+
+Requires having [`pg`](http://rubygems.org/gems/pg) available in the application. In our PostgreSQL recipe we dynamically generate a `database.yml` based on the variables that should be set globally or per-stage.
+
+**Please note** that we rely on local peer connection, hence, remote connections should use a custom template for `database.yml.erb`. **The PG cluster must have `UTF8` encoding.
+
+Overwritable template: [`database.yml.erb`](lib/matross/templates/postgresql/database.yml.erb)
+
+> Variables
+
+| Variable               | Default value                          | Description                                                           |
+| ---                    | ---                                    | ---                                                                   |
+| `:database_config`     | `"#{shared_path}/config/database.yml"` | Location of the configuration file                                    |
+| `:postgresql_database` | None                                   | PostgreSQL database name. Dashes `-` are *gsubed* for underscores `_` |
+| `:postgresql_user`     | `user`                                 | PostgreSQL user                                                       |
+
+> Tasks
+
+| Task                 | Description                                                             |
+| ---                  | ---                                                                     |
+| `postgresql:setup`   | Creates the `database.yml` in the `shared_path`, and the user if needed |
+| `postgresql:symlink` | Creates a symlink for the `database.yml` file in the `current_path`     |
+| `postgresql:create`  | Creates the database if it hasn't been created and loads the schema     |
 
 ## Mongoid
 
