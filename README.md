@@ -156,16 +156,18 @@ Overwritable template: [`database.yml.erb`](lib/matross/templates/mysql/database
 
 > Tasks
 
-| Task                 | Description                                                                               |
-| ---                  | ---                                                                                       |
-| `mysql:setup`        | Creates the `database.yml` in the `shared_path`                                           |
-| `mysql:symlink`      | Creates a symlink for the `database.yml` file in the `current_path`                       |
-| `mysql:create`       | Creates the database if it hasn't been created                                            |
-| `mysql:schema_load`  | Loads the schema if there are no tables in the DB                                         |
-| `mysql:backup:setup` | Creates the backup script and configures the user's cron - *Not hooked to any other task* |
-| `mysql:dump:do`      | Dumps the application database                                                            |
-| `mysql:dump:get`     | Downloads a copy of the last generated database dump                                      |
-| `mysql:dump:apply`   | Apply the latest dump generated stored in 'dumps' locally                                 |
+| Task                        | Description                                                                               |
+| ---                         | ---                                                                                       |
+| `mysql:setup`               | Creates the `database.yml` in the `shared_path`                                           |
+| `mysql:symlink`             | Creates a symlink for the `database.yml` file in the `current_path`                       |
+| `mysql:create`              | Creates the database if it hasn't been created                                            |
+| `mysql:schema_load`         | Loads the schema if there are no tables in the DB                                         |
+| `mysql:backup:setup`        | Creates the backup script and configures the user's cron - *Not hooked to any other task* |
+| `mysql:dump:do`             | Dumps the application database                                                            |
+| `mysql:dump:get`            | Downloads a copy of the last generated database dump                                      |
+| `mysql:dump:apply`          | Applies the latest dump generated stored in 'dumps' locally                               |
+| `mysql:dump:post`           | Uploads a copy of the last generated database dump                                        |
+| `mysql:dump:apply_remotely` | Applies the latest uploaded dump in the remote server                                     |
 
 ### PostgreSQL
 
