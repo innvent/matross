@@ -1,7 +1,7 @@
+# matross
+
 [![Code Climate](http://img.shields.io/codeclimate/github/innvent/matross.svg)](https://codeclimate.com/github/innvent/matross)
 [![Dependency Status](https://gemnasium.com/innvent/matross.svg)](https://gemnasium.com/innvent/matross)
-
-# matross
 
 Matross is our collection of opinionated Capistrano recipes. We made a bunch of additions and customizations. Below we list the most relevant ones.
 
