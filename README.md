@@ -1,3 +1,6 @@
+[![Code Climate](http://img.shields.io/codeclimate/github/innvent/matross.svg)](https://codeclimate.com/github/innvent/matross)
+[![Dependency Status](https://gemnasium.com/innvent/matross.svg)](https://gemnasium.com/innvent/matross)
+
 # matross
 
 Matross is our collection of opinionated Capistrano recipes. We made a bunch of additions and customizations. Below we list the most relevant ones.
@@ -173,7 +176,7 @@ Overwritable template: [`database.yml.erb`](lib/matross/templates/mysql/database
 
 Requires having [`pg`](http://rubygems.org/gems/pg) available in the application. In our PostgreSQL recipe we dynamically generate a `database.yml` based on the variables that should be set globally or per-stage.
 
-**Please note** that we rely on local peer connection, hence, remote connections should use a custom template for `database.yml.erb`. **The PG cluster must have `UTF8` encoding.
+**Please note** that we rely on local peer connection, hence, remote connections should use a custom template for `database.yml.erb`. **The PG cluster must have `UTF8` encoding.**
 
 Overwritable template: [`database.yml.erb`](lib/matross/templates/postgresql/database.yml.erb)
 
