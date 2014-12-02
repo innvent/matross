@@ -47,7 +47,7 @@ set :foreman_procs, {
 
 We also modified the default upstart template to log through upstart instead of just piping stdout and stderr into files. Goodbye nocturnal logexplosion. (Like all templates you can override it!).
 
-If you have custom tasks that should also be started, simply list them in the `Procfile` in the root of your application. They will be appended to the recipe's task definitions (eg.: `unicorn`).
+If you have custom tasks that should also be started, simply list them in the `Procfile` in the root of your application. They will be appended to the recipe's task definitions (e.g.: `unicorn`).
 
 ```
 custom_task: bundle exec rake custom_task
@@ -305,7 +305,7 @@ Procfile task: `faye: bundle exec rackup  <%= faye_ru %> -s thin -E <%= rails_en
 
 In order to deal with memory or CPU constrained production servers, this recipe overwrites the default assets precompilation by compiling them locally and then uploading the result to the server.
 
-Rake precompiles assets in a `production` to properly generate file names with hashes. One of the gotchas to this is that by default Rails initializes the entire applicaction when executing the `assets:precompile` task. If you use different databases in production and development and run into database connection errors with this task you can override this behavior.
+Rake precompiles assets in a `production` to properly generate file names with hashes. One of the gotchas to this is that by default Rails initializes the entire application when executing the `assets:precompile` task. If you use different databases in production and development and run into database connection errors with this task you can override this behavior.
 
 > `config/application.rb`
 
